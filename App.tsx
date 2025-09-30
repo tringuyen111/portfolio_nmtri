@@ -52,16 +52,18 @@ const deepEqual = (obj1: any, obj2: any): boolean => {
 
 // --- End LocalStorage ---
 
-type EditingItem = 
-    | { type: 'hero'; data: { en: HeroData, vn: HeroData } }
-    | { type: 'project'; data: { en: Project, vn: Project } | 'new' }
-    | { type: 'experience'; data: { en: Experience, vn: Experience } | 'new' }
-    | { type: 'skill'; data: { en: SkillCategory, vn: SkillCategory } | 'new' }
-    | { type: 'contact'; data: { en: LanguageContent['contact'], vn: LanguageContent['contact'] } };
+type Bilingual<T> = { en: T; vn: T };
+
+type EditingItem =
+    | { type: 'hero'; data: Bilingual<HeroData> }
+    | { type: 'project'; data: Bilingual<Project> | 'new' }
+    | { type: 'experience'; data: Bilingual<Experience> | 'new' }
+    | { type: 'skill'; data: Bilingual<SkillCategory> | 'new' }
+    | { type: 'contact'; data: Bilingual<LanguageContent['contact']> };
 
 type Language = 'en' | 'vn';
 
-type AppContent = { en: LanguageContent; vn: LanguageContent };
+type AppContent = Bilingual<LanguageContent>;
 
 const App: React.FC = () => {
   const [content, setContent] = useState<AppContent>(() => getFromStorage(LS_KEY_CONTENT, allLanguageData));
@@ -114,7 +116,7 @@ const App: React.FC = () => {
       if (username === 'nguyenmanhtri2907@gmail.com' && password === 'nmt29072002') {
           sessionStorage.setItem('isAdminLoggedIn', 'true');
           setIsAdmin(true);
-          setDraftContent(JSON.parse(JSON.stringify(content))); // Enter edit mode immediately
+          // Do not enter edit mode automatically on login
           return true;
       }
       return false;
@@ -149,7 +151,7 @@ const App: React.FC = () => {
   const activeContent = isEditing && draftContent ? draftContent : content;
   const currentLangContent = activeContent[language];
 
-  const handleSaveHero = (data: { en: HeroData, vn: HeroData }) => {
+  const handleSaveHero = (data: Bilingual<HeroData>) => {
     setDraftContent(prev => {
         if (!prev) return null;
         const sharedImageUrl = data.en.imageUrl;
@@ -171,25 +173,25 @@ const App: React.FC = () => {
       }
   };
 
-  const handleSaveProject = (data: { en: Project | Omit<Project, 'id'>, vn: Project | Omit<Project, 'id'> }) => {
+  const handleSaveProject = (data: Bilingual<Project> | Bilingual<Omit<Project, 'id'>>) => {
+    // FIX: Cast data within each branch to help TypeScript's type inference.
+    // The `in` operator type guard was not correctly narrowing the `data` object's bilingual properties together.
     setDraftContent(prev => {
         if (!prev) return null;
-        if ('id' in data.en && 'id' in data.vn) { // Editing existing
-            // FIX: The type guard `'id' in data.en` is not narrowing the type as expected.
-            // We cast `data.en` and `data.vn` to their full types to safely access the `id`.
-            const enProject = data.en as Project;
-            const vnProject = data.vn as Project;
-            const updateEn = prev.en.projectsData.map(p => p.id === enProject.id ? enProject : p);
-            const updateVn = prev.vn.projectsData.map(p => p.id === vnProject.id ? vnProject : p);
+        if ('id' in data.en) { // Editing existing
+            const editingData = data as Bilingual<Project>;
+            const updateEn = prev.en.projectsData.map(p => p.id === editingData.en.id ? editingData.en : p);
+            const updateVn = prev.vn.projectsData.map(p => p.id === editingData.vn.id ? editingData.vn : p);
             return {
                 ...prev,
                 en: { ...prev.en, projectsData: updateEn },
                 vn: { ...prev.vn, projectsData: updateVn },
             };
         } else { // Adding new
+            const newData = data as Bilingual<Omit<Project, 'id'>>;
             const newId = Date.now();
-            const newEnProject: Project = { ...(data.en as Omit<Project, 'id'>), id: newId };
-            const newVnProject: Project = { ...(data.vn as Omit<Project, 'id'>), id: newId };
+            const newEnProject: Project = { ...newData.en, id: newId };
+            const newVnProject: Project = { ...newData.vn, id: newId };
             // Sync shared fields
             newVnProject.coverImage = newEnProject.coverImage;
             newVnProject.detailImages = newEnProject.detailImages;
@@ -227,25 +229,25 @@ const App: React.FC = () => {
       }
   };
 
-  const handleSaveExperience = (data: { en: Experience | Omit<Experience, 'id'>, vn: Experience | Omit<Experience, 'id'> }) => {
+  const handleSaveExperience = (data: Bilingual<Experience> | Bilingual<Omit<Experience, 'id'>>) => {
+    // FIX: Cast data within each branch to help TypeScript's type inference.
+    // The `in` operator type guard was not correctly narrowing the `data` object's bilingual properties together.
     setDraftContent(prev => {
         if (!prev) return null;
-        if ('id' in data.en && 'id' in data.vn) { // Editing existing
-            // FIX: The type guard `'id' in data.en` is not narrowing the type as expected.
-            // We cast `data.en` and `data.vn` to their full types to safely access the `id`.
-            const enExp = data.en as Experience;
-            const vnExp = data.vn as Experience;
-            const updateEn = prev.en.experiencesData.map(e => e.id === enExp.id ? enExp : e);
-            const updateVn = prev.vn.experiencesData.map(e => e.id === vnExp.id ? vnExp : e);
+        if ('id' in data.en) { // Editing existing
+            const editingData = data as Bilingual<Experience>;
+            const updateEn = prev.en.experiencesData.map(e => e.id === editingData.en.id ? editingData.en : e);
+            const updateVn = prev.vn.experiencesData.map(e => e.id === editingData.vn.id ? editingData.vn : e);
             return {
                 ...prev,
                 en: { ...prev.en, experiencesData: updateEn },
                 vn: { ...prev.vn, experiencesData: updateVn },
             };
         } else { // Adding new
+            const newData = data as Bilingual<Omit<Experience, 'id'>>;
             const newId = Date.now();
-            const newEnExp: Experience = { ...(data.en as Omit<Experience, 'id'>), id: newId };
-            const newVnExp: Experience = { ...(data.vn as Omit<Experience, 'id'>), id: newId };
+            const newEnExp: Experience = { ...newData.en, id: newId };
+            const newVnExp: Experience = { ...newData.vn, id: newId };
             return {
                 ...prev,
                 en: { ...prev.en, experiencesData: [newEnExp, ...prev.en.experiencesData] },
@@ -279,25 +281,25 @@ const App: React.FC = () => {
       }
   };
 
-  const handleSaveSkillCategory = (data: { en: SkillCategory | Omit<SkillCategory, 'id'>, vn: SkillCategory | Omit<SkillCategory, 'id'> }) => {
+  const handleSaveSkillCategory = (data: Bilingual<SkillCategory> | Bilingual<Omit<SkillCategory, 'id'>>) => {
+    // FIX: Cast data within each branch to help TypeScript's type inference.
+    // The `in` operator type guard was not correctly narrowing the `data` object's bilingual properties together.
     setDraftContent(prev => {
         if (!prev) return null;
-        if ('id' in data.en && 'id' in data.vn) { // Editing existing
-            // FIX: The type guard `'id' in data.en` is not narrowing the type as expected.
-            // We cast `data.en` and `data.vn` to their full types to safely access the `id`.
-            const enSc = data.en as SkillCategory;
-            const vnSc = data.vn as SkillCategory;
-            const updateEn = prev.en.skillCategoriesData.map(sc => sc.id === enSc.id ? enSc : sc);
-            const updateVn = prev.vn.skillCategoriesData.map(sc => sc.id === vnSc.id ? vnSc : sc);
+        if ('id' in data.en) { // Editing existing
+            const editingData = data as Bilingual<SkillCategory>;
+            const updateEn = prev.en.skillCategoriesData.map(sc => sc.id === editingData.en.id ? editingData.en : sc);
+            const updateVn = prev.vn.skillCategoriesData.map(sc => sc.id === editingData.vn.id ? editingData.vn : sc);
             return {
                 ...prev,
                 en: { ...prev.en, skillCategoriesData: updateEn },
                 vn: { ...prev.vn, skillCategoriesData: updateVn },
             };
         } else { // Adding new
+            const newData = data as Bilingual<Omit<SkillCategory, 'id'>>;
             const newId = Date.now();
-            const newEnSc: SkillCategory = { ...(data.en as Omit<SkillCategory, 'id'>), id: newId };
-            const newVnSc: SkillCategory = { ...(data.vn as Omit<SkillCategory, 'id'>), id: newId };
+            const newEnSc: SkillCategory = { ...newData.en, id: newId };
+            const newVnSc: SkillCategory = { ...newData.vn, id: newId };
             return {
                 ...prev,
                 en: { ...prev.en, skillCategoriesData: [...prev.en.skillCategoriesData, newEnSc] },
@@ -322,7 +324,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSaveContact = (data: { en: LanguageContent['contact'], vn: LanguageContent['contact'] }) => {
+  const handleSaveContact = (data: Bilingual<LanguageContent['contact']>) => {
     setDraftContent(prev => {
         if (!prev) return null;
         return {
@@ -363,7 +365,7 @@ const App: React.FC = () => {
             title={currentLangContent.hero.title}
             paragraphs={currentLangContent.hero.paragraphs}
             imageUrl={currentLangContent.hero.imageUrl}
-            isAdmin={isAdmin}
+            isEditing={isEditing}
             onEdit={() => isEditing && setEditingItem({ type: 'hero', data: { en: activeContent.en.hero, vn: activeContent.vn.hero } })}
         />
         <Projects 
@@ -404,7 +406,7 @@ const App: React.FC = () => {
             title={currentLangContent.contact.title}
             subtitle={currentLangContent.contact.subtitle}
             contactMethods={currentLangContent.contact.contactMethods}
-            isAdmin={isAdmin}
+            isEditing={isEditing}
             onEdit={() => isEditing && setEditingItem({ type: 'contact', data: { en: activeContent.en.contact, vn: activeContent.vn.contact } })}
         />
       </main>

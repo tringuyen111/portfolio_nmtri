@@ -7,7 +7,7 @@ interface ContactProps {
     title: string;
     subtitle: string;
     contactMethods: ContactMethod[];
-    isAdmin: boolean;
+    isEditing: boolean;
     onEdit: () => void;
 }
 
@@ -17,10 +17,10 @@ const iconMap: { [key in ContactMethod['type']]: React.FC<{className?: string}> 
     phone: (props) => <PhoneIcon {...props} className="w-6 h-6 text-blue-500" />,
 };
 
-const Contact: React.FC<ContactProps> = ({ title, subtitle, contactMethods, isAdmin, onEdit }) => {
+const Contact: React.FC<ContactProps> = ({ title, subtitle, contactMethods, isEditing, onEdit }) => {
   return (
     <section id="contact" className="py-20 bg-white relative">
-      {isAdmin && (
+      {isEditing && (
         <button onClick={onEdit} className="absolute top-4 right-4 bg-brand-green text-white p-2 rounded-full hover:opacity-80 transition-opacity">
             <PencilIcon />
         </button>

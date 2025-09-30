@@ -225,16 +225,13 @@ export const HeroEditModal: React.FC<HeroEditModalProps> = ({ heroData, onSave, 
 // Project Edit Modal
 interface ProjectEditModalProps {
     project: { en: Project, vn: Project } | 'new';
-    onSave: (data: { en: Project | Omit<Project, 'id'>, vn: Project | Omit<Project, 'id'> }) => void;
+    onSave: (data: { en: Project, vn: Project } | { en: Omit<Project, 'id'>, vn: Omit<Project, 'id'> }) => void;
     onClose: () => void;
     title: string;
     saveButtonText: string;
     urlLabelText: string;
     imageResolutionWarningText: string;
 }
-// FIX: Explicitly type emptyBilingualProject to make the `url` property optional, matching the `Project` type.
-// This resolves type inference issues where `url` was treated as a required string for new projects,
-// causing conflicts with existing projects where it is optional.
 const emptyBilingualProject: { en: Omit<Project, 'id'>, vn: Omit<Project, 'id'> } = {
     en: { title: '', description: '', responsibilities: [], technologies: [], coverImage: '', detailImages: [], url: '' },
     vn: { title: '', description: '', responsibilities: [], technologies: [], coverImage: '', detailImages: [], url: '' },
@@ -360,7 +357,7 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onS
 // Experience Edit Modal
 interface ExperienceEditModalProps {
     experience: { en: Experience, vn: Experience } | 'new';
-    onSave: (data: { en: Experience | Omit<Experience, 'id'>, vn: Experience | Omit<Experience, 'id'> }) => void;
+    onSave: (data: { en: Experience, vn: Experience } | { en: Omit<Experience, 'id'>, vn: Omit<Experience, 'id'> }) => void;
     onClose: () => void;
     title: string;
     saveButtonText: string;
@@ -403,7 +400,7 @@ export const ExperienceEditModal: React.FC<ExperienceEditModalProps> = ({ experi
 // Skill Category Edit Modal
 interface SkillCategoryEditModalProps {
     skillCategory: { en: SkillCategory, vn: SkillCategory } | 'new';
-    onSave: (data: { en: SkillCategory | Omit<SkillCategory, 'id'>, vn: SkillCategory | Omit<SkillCategory, 'id'> }) => void;
+    onSave: (data: { en: SkillCategory, vn: SkillCategory } | { en: Omit<SkillCategory, 'id'>, vn: Omit<SkillCategory, 'id'> }) => void;
     onClose: () => void;
     title: string;
     saveButtonText: string;

@@ -7,15 +7,15 @@ interface HeroProps {
   title: string;
   paragraphs: string[];
   imageUrl: string;
-  isAdmin: boolean;
+  isEditing: boolean;
   onEdit: () => void;
 }
 
-const Hero: React.FC<HeroProps> = ({ kicker, title, paragraphs, imageUrl, isAdmin, onEdit }) => {
+const Hero: React.FC<HeroProps> = ({ kicker, title, paragraphs, imageUrl, isEditing, onEdit }) => {
   return (
     <section id="home" className="pt-32 pb-16 bg-brand-background">
       <div className="container mx-auto px-6 text-center relative">
-        {isAdmin && (
+        {isEditing && (
             <button onClick={onEdit} className="absolute top-0 right-0 bg-brand-green text-white p-2 rounded-full hover:opacity-80 transition-opacity">
                 <PencilIcon />
             </button>
