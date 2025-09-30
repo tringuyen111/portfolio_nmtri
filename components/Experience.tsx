@@ -36,7 +36,7 @@ const ExperienceComponent: React.FC<ExperienceProps> = ({ sectionTitle, title, s
         <div className="relative">
           <div className="absolute left-5 md:left-1/2 -translate-x-1/2 h-full w-0.5 bg-gray-200" aria-hidden="true"></div>
           <div className="space-y-12">
-            {experiences.map((exp, index) => (
+            {(experiences || []).map((exp, index) => (
               <div key={exp.id} className="relative flex items-start md:grid md:grid-cols-2 md:gap-x-16 group">
                 
                 <div className="absolute left-5 md:left-1/2 -translate-x-1/2 w-10 h-10 bg-brand-green rounded-full flex-shrink-0 flex items-center justify-center z-10">

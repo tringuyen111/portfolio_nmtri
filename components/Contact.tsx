@@ -31,7 +31,7 @@ const Contact: React.FC<ContactProps> = ({ title, subtitle, contactMethods, isEd
           {subtitle}
         </p>
         <div className="flex flex-wrap justify-center items-center gap-4">
-          {contactMethods.map((method) => {
+          {(contactMethods || []).map((method) => {
             const Icon = iconMap[method.type];
             return (
               <a 

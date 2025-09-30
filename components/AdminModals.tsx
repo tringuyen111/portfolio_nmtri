@@ -300,7 +300,7 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({
     };
 
     const removeDetailImage = (indexToRemove: number) => {
-        const updatedImages = formData.en.detailImages.filter((_, index) => index !== indexToRemove);
+        const updatedImages = (formData.en.detailImages || []).filter((_, index) => index !== indexToRemove);
         setFormData(prev => ({
             en: { ...prev.en, detailImages: updatedImages },
             vn: { ...prev.vn, detailImages: updatedImages },
@@ -324,8 +324,8 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({
                 <FormField label={roleLabelText}><TextInput value={currentLangData.role} onChange={e => handleTextChange('role', e.target.value)} /></FormField>
                 <FormField label={clientLabelText}><TextInput value={currentLangData.client} onChange={e => handleTextChange('client', e.target.value)} /></FormField>
                 <FormField label="Description"><TextArea required value={currentLangData.description} onChange={e => handleTextChange('description', e.target.value)} /></FormField>
-                <FormField label={deliverablesLabelText} instruction="One item per line"><TextArea value={currentLangData.deliverables.join('\n')} onChange={e => handleTextChange('deliverables', e.target.value.split('\n').filter(r => r.trim() !== ''))} /></FormField>
-                <FormField label="Technologies" instruction="Comma-separated"><TextInput value={currentLangData.technologies.join(', ')} onChange={e => handleTextChange('technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t !== ''))} /></FormField>
+                <FormField label={deliverablesLabelText} instruction="One item per line"><TextArea value={(currentLangData.deliverables || []).join('\n')} onChange={e => handleTextChange('deliverables', e.target.value.split('\n').filter(r => r.trim() !== ''))} /></FormField>
+                <FormField label="Technologies" instruction="Comma-separated"><TextInput value={(currentLangData.technologies || []).join(', ')} onChange={e => handleTextChange('technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t !== ''))} /></FormField>
                 
                 <hr className="my-6"/>
 
@@ -347,11 +347,11 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({
                     {formData.en.coverImage && <img src={formData.en.coverImage} alt="Cover preview" className="mt-2 rounded-lg w-48 object-cover" />}
                 </FormField>
                 
-                <FormField label={`Detail Images (Shared) (${formData.en.detailImages.length})`}>
+                <FormField label={`Detail Images (Shared) (${(formData.en.detailImages || []).length})`}>
                     <input type="file" multiple accept="image/*" onChange={handleDetailImagesUpload} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-green-light file:text-brand-green hover:file:bg-brand-green-light/80 mb-2" />
                     <p className="text-xs text-gray-500 mt-1">{imageResolutionWarningText}</p>
                     <div className="flex flex-wrap gap-2 mt-2">
-                        {formData.en.detailImages.map((img, index) => (
+                        {(formData.en.detailImages || []).map((img, index) => (
                             <div key={index} className="relative">
                                 <img src={img} alt={`detail ${index + 1}`} className="w-24 h-24 object-cover rounded-md"/>
                                 <button type="button" onClick={() => removeDetailImage(index)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">&times;</button>
@@ -552,7 +552,7 @@ export const SkillCategoryEditModal: React.FC<SkillCategoryEditModalProps> = ({ 
             <form onSubmit={handleSubmit}>
                 <LanguageTabs activeLang={activeLang} onSelect={setActiveLang} />
                 <FormField label="Category Title"><TextInput value={currentLangData.title} onChange={e => handleChange('title', e.target.value)} /></FormField>
-                <FormField label="Skills (comma-separated)"><TextInput value={currentLangData.skills.join(', ')} onChange={e => handleChange('skills', e.target.value.split(',').map(s => s.trim()).filter(s => s !== ''))} /></FormField>
+                <FormField label="Skills (comma-separated)"><TextInput value={(currentLangData.skills || []).join(', ')} onChange={e => handleChange('skills', e.target.value.split(',').map(s => s.trim()).filter(s => s !== ''))} /></FormField>
                 <button type="submit" className="w-full bg-brand-green text-white py-2 rounded-md mt-4">{saveButtonText}</button>
             </form>
         </EditModalBase>
@@ -583,8 +583,8 @@ export const ContactEditModal: React.FC<ContactEditModalProps> = ({ contactData,
 
     const handleMethodChange = <K extends keyof ContactMethod>(index: number, field: K, value: ContactMethod[K]) => {
         setFormData(prev => {
-            const newEnMethods = [...prev.en.contactMethods];
-            const newVnMethods = [...prev.vn.contactMethods];
+            const newEnMethods = [...(prev.en.contactMethods || [])];
+            const newVnMethods = [...(prev.vn.contactMethods || [])];
             
             if (field === 'label') {
                 if (activeLang === 'en') {
@@ -607,15 +607,15 @@ export const ContactEditModal: React.FC<ContactEditModalProps> = ({ contactData,
     const addMethod = () => {
         const newMethod: ContactMethod = { type: 'email', label: '', url: '' };
         setFormData(prev => ({
-            en: { ...prev.en, contactMethods: [...prev.en.contactMethods, newMethod] },
-            vn: { ...prev.vn, contactMethods: [...prev.vn.contactMethods, newMethod] },
+            en: { ...prev.en, contactMethods: [...(prev.en.contactMethods || []), newMethod] },
+            vn: { ...prev.vn, contactMethods: [...(prev.vn.contactMethods || []), newMethod] },
         }));
     };
 
     const removeMethod = (index: number) => {
         setFormData(prev => ({
-            en: { ...prev.en, contactMethods: prev.en.contactMethods.filter((_, i) => i !== index) },
-            vn: { ...prev.vn, contactMethods: prev.vn.contactMethods.filter((_, i) => i !== index) },
+            en: { ...prev.en, contactMethods: (prev.en.contactMethods || []).filter((_, i) => i !== index) },
+            vn: { ...prev.vn, contactMethods: (prev.vn.contactMethods || []).filter((_, i) => i !== index) },
         }));
     };
 
@@ -636,7 +636,7 @@ export const ContactEditModal: React.FC<ContactEditModalProps> = ({ contactData,
 
                 <h3 className="text-lg font-medium text-gray-800 mb-4">Contact Methods</h3>
                 <div className="space-y-4">
-                    {formData.en.contactMethods.map((_, index) => (
+                    {(formData.en.contactMethods || []).map((_, index) => (
                         <div key={index} className="bg-gray-50 p-4 rounded-md border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4 relative">
                             <button type="button" onClick={() => removeMethod(index)} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><TrashIcon className="w-4 h-4" /></button>
                             <FormField label="Type (Shared)">

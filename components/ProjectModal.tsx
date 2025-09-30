@@ -43,7 +43,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, visitProj
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
-      } else if (project && [project.coverImage, ...project.detailImages].filter(Boolean).length > 1) {
+      } else if (project && [project.coverImage, ...(project.detailImages || [])].filter(Boolean).length > 1) {
         if (e.key === 'ArrowLeft') {
           prevImage();
         } else if (e.key === 'ArrowRight') {
@@ -57,7 +57,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, visitProj
 
   if (!project) return null;
 
-  const allImages = [project.coverImage, ...project.detailImages].filter(Boolean);
+  const allImages = [project.coverImage, ...(project.detailImages || [])].filter(Boolean);
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) =>
@@ -128,7 +128,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, visitProj
             
             <DetailItem icon={<Bars3BottomLeftIcon />} label={detailLabels.deliverables}>
                 <ul className="space-y-1">
-                  {project.deliverables.map((item, i) => <li key={i} className="flex items-start"><span className="mr-2 mt-1">-</span><span>{item}</span></li>)}
+                  {(project.deliverables || []).map((item, i) => <li key={i} className="flex items-start"><span className="mr-2 mt-1">-</span><span>{item}</span></li>)}
                 </ul>
             </DetailItem>
 
@@ -140,7 +140,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, visitProj
 
             <DetailItem icon={<ListBulletIcon />} label={detailLabels.tools}>
                 <div className="flex flex-wrap gap-2">
-                    {project.technologies.map(tech => (
+                    {(project.technologies || []).map(tech => (
                         <span key={tech} className="bg-gray-100 text-gray-800 text-sm font-medium px-2.5 py-0.5 rounded border border-gray-300">
                             {tech}
                         </span>

@@ -29,7 +29,7 @@ const Hero: React.FC<HeroProps> = ({ kicker, title, paragraphs, imageUrl, isEdit
               {title}
             </h1>
             <div className="max-w-xl mx-auto md:mx-0 text-lg text-brand-text-secondary space-y-4">
-                {paragraphs.map((p, i) => (
+                {(paragraphs || []).map((p, i) => (
                     <p key={i} dangerouslySetInnerHTML={{ __html: p }} />
                 ))}
             </div>
