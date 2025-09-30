@@ -1,6 +1,5 @@
 
 
-
 import React, { useState, useEffect } from 'react';
 import { CloseIcon, TrashIcon, PlusIcon } from './icons';
 import type { Project, Experience, SkillCategory, HeroData, ContactMethod } from '../types';
@@ -208,7 +207,7 @@ export const HeroEditModal: React.FC<HeroEditModalProps> = ({ heroData, onSave, 
                 <FormField label="Paragraphs" instruction="Separate paragraphs with a blank line. Use <b>text</b> for bold text.">
                     <TextArea 
                         rows={6} 
-                        value={currentLangData.paragraphs.join('\n\n')} 
+                        value={(currentLangData.paragraphs || []).join('\n\n')} 
                         onChange={e => handleParagraphsChange(e.target.value)} 
                     />
                 </FormField>
