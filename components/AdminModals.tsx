@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useEffect } from 'react';
 import { CloseIcon, TrashIcon, PlusIcon } from './icons';
 import type { Project, Experience, SkillCategory, HeroData, ContactMethod } from '../types';
@@ -237,6 +238,9 @@ interface ProjectEditModalProps {
     dateLabelText: string;
     deliverablesLabelText: string;
     imageResolutionWarningText: string;
+    projectTitleLabel: string;
+    projectDescriptionLabel: string;
+    projectTechnologiesLabel: string;
 }
 const emptyBilingualProject: { en: Omit<Project, 'id'>, vn: Omit<Project, 'id'> } = {
     en: { title: '', description: '', role: '', client: '', date: '', deliverables: [], technologies: [], coverImage: '', detailImages: [], url: '' },
@@ -246,7 +250,7 @@ const emptyBilingualProject: { en: Omit<Project, 'id'>, vn: Omit<Project, 'id'> 
 export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ 
     project, onSave, onClose, title, saveButtonText, urlLabelText, 
     roleLabelText, clientLabelText, dateLabelText, deliverablesLabelText, 
-    imageResolutionWarningText 
+    imageResolutionWarningText, projectTitleLabel, projectDescriptionLabel, projectTechnologiesLabel
 }) => {
     const [formData, setFormData] = useState(project === 'new' ? emptyBilingualProject : project);
     const [activeLang, setActiveLang] = useState<'en' | 'vn'>('en');
@@ -320,12 +324,12 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({
         <EditModalBase title={title} onClose={onClose}>
             <form onSubmit={handleSubmit}>
                 <LanguageTabs activeLang={activeLang} onSelect={setActiveLang} />
-                <FormField label="Title"><TextInput required value={currentLangData.title} onChange={e => handleTextChange('title', e.target.value)} /></FormField>
+                <FormField label={projectTitleLabel}><TextInput required value={currentLangData.title} onChange={e => handleTextChange('title', e.target.value)} /></FormField>
                 <FormField label={roleLabelText}><TextInput value={currentLangData.role} onChange={e => handleTextChange('role', e.target.value)} /></FormField>
                 <FormField label={clientLabelText}><TextInput value={currentLangData.client} onChange={e => handleTextChange('client', e.target.value)} /></FormField>
-                <FormField label="Description"><TextArea required value={currentLangData.description} onChange={e => handleTextChange('description', e.target.value)} /></FormField>
+                <FormField label={projectDescriptionLabel}><TextArea required value={currentLangData.description} onChange={e => handleTextChange('description', e.target.value)} /></FormField>
                 <FormField label={deliverablesLabelText} instruction="One item per line"><TextArea value={(currentLangData.deliverables || []).join('\n')} onChange={e => handleTextChange('deliverables', e.target.value.split('\n').filter(r => r.trim() !== ''))} /></FormField>
-                <FormField label="Technologies" instruction="Comma-separated"><TextInput value={(currentLangData.technologies || []).join(', ')} onChange={e => handleTextChange('technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t !== ''))} /></FormField>
+                <FormField label={projectTechnologiesLabel} instruction="Comma-separated"><TextInput value={(currentLangData.technologies || []).join(', ')} onChange={e => handleTextChange('technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t !== ''))} /></FormField>
                 
                 <hr className="my-6"/>
 

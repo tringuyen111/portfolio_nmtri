@@ -63,6 +63,9 @@ export interface LanguageContent {
       projectClientLabel: string;
       projectDateLabel: string;
       projectDeliverablesLabel: string;
+      projectTitleLabel: string;
+      projectDescriptionLabel: string;
+      projectTechnologiesLabel: string;
       visitProjectLink: string;
       addExperienceTitle: string;
       editExperienceTitle: string;
@@ -257,6 +260,9 @@ export const initialContent: AppContent = {
         projectClientLabel: 'Client / Industry',
         projectDateLabel: 'Date (Shared)',
         projectDeliverablesLabel: 'Deliverables',
+        projectTitleLabel: 'Title',
+        projectDescriptionLabel: 'Description',
+        projectTechnologiesLabel: 'Technologies',
         visitProjectLink: 'Visit Project Link',
         addExperienceTitle: 'Add New Experience',
         editExperienceTitle: 'Edit Experience',
@@ -444,6 +450,9 @@ export const initialContent: AppContent = {
         projectClientLabel: 'Khách hàng / Ngành',
         projectDateLabel: 'Ngày (Chung)',
         projectDeliverablesLabel: 'Sản phẩm bàn giao',
+        projectTitleLabel: 'Tiêu đề',
+        projectDescriptionLabel: 'Mô tả',
+        projectTechnologiesLabel: 'Công nghệ',
         visitProjectLink: 'Xem Liên kết Dự án',
         addExperienceTitle: 'Thêm kinh nghiệm mới',
         editExperienceTitle: 'Chỉnh sửa kinh nghiệm',
