@@ -1,4 +1,6 @@
 
+
+
 import type { Project, Experience, SkillCategory, HeroData, NavLink, ContactMethod, AppContent } from './types';
 
 export interface LanguageContent {
@@ -16,6 +18,12 @@ export interface LanguageContent {
     title: string;
     addProject: string;
     viewProjectLink: string;
+    overview: string;
+    role: string;
+    client: string;
+    deliverables: string;
+    date: string;
+    tools: string;
   };
   projectsData: Project[];
   experience: {
@@ -51,6 +59,10 @@ export interface LanguageContent {
       editProjectTitle: string;
       saveProject: string;
       projectUrlLabel: string;
+      projectRoleLabel: string;
+      projectClientLabel: string;
+      projectDateLabel: string;
+      projectDeliverablesLabel: string;
       visitProjectLink: string;
       addExperienceTitle: string;
       editExperienceTitle: string;
@@ -115,14 +127,22 @@ export const initialContent: AppContent = {
         title: 'Featured Projects',
         addProject: 'Add Project',
         viewProjectLink: 'View Link',
+        overview: 'Overview',
+        role: 'Role',
+        client: 'Client / Industry',
+        deliverables: 'Deliverables',
+        date: 'Date',
+        tools: 'Tools',
     },
     projectsData: [
       {
         id: 1,
         title: 'Contract Management System (CMS) – Central Retail',
         description: 'A comprehensive system to manage the entire contract lifecycle, from creation, review, and approval to digital/physical signing, storage, and reporting.',
-        responsibilities: [
-          'Acted as Business Analyst and Assistant Project Manager.',
+        role: 'Business Analyst & Assistant Project Manager',
+        client: 'Central Retail in Vietnam',
+        date: '2023 - 2024',
+        deliverables: [
           'Developed Blueprint, FRD/URD, and detailed UI flows.',
           'Managed product backlog and sprints using Jira.',
           'Coordinated with development/QA teams and supported UAT.',
@@ -135,15 +155,20 @@ export const initialContent: AppContent = {
       },
       {
         id: 2,
-        title: 'RMS 2.0 (Repair & Maintenance) – Suntory PepsiCo',
-        description: 'A system to receive, process, and manage maintenance requests for equipment at points of sale, featuring real-time dashboards and spare parts management.',
-        responsibilities: [
-          'Authored BRD, URD, and Blueprint documents.',
-          'Designed web and mobile wireframes/mockups using Figma.',
-          'Created detailed specifications for SAP integration.',
-          'Developed UAT Test Plans and coordinated user acceptance testing.',
+        title: 'RMS 2.0 (Repair & Maintenance System 2.0)',
+        description: 'RMS 2.0 is a multi-functional platform designed for the MEM department of Suntory PepsiCo Vietnam (SPVB). The system streamlines the intake, processing, and management of service requests related to equipment maintenance at retail outlets. It optimizes spare part inventory through QR code labeling and full synchronization with SAP, ensuring data accuracy and operational efficiency.',
+        role: 'Business Analyst',
+        client: 'Suntory PepsiCo Vietnam (SPVB) – MEM Department',
+        date: '',
+        deliverables: [
+          'Business Requirements Document (BRD)',
+          'User Requirements Document (URD)',
+          'System Blueprint',
+          'UI/UX Wireframes, Mockups (Figma)',
+          'Integration Specifications (SAP, MEMS)',
+          'UAT Test Plan',
         ],
-        technologies: ['Figma', 'Jira', 'SAP Integration', 'QR Code Systems'],
+        technologies: ['Figma', 'Microsoft Office', 'BPMN', 'Jira', 'AI', 'Visio'],
         coverImage: 'https://picsum.photos/seed/rms1/1200/800',
         detailImages: ['https://picsum.photos/seed/rms2/1200/800'],
         url: '',
@@ -152,7 +177,10 @@ export const initialContent: AppContent = {
         id: 3,
         title: 'Inventory – X Cloud',
         description: 'A Master Data module for the X Cloud inventory system, providing a centralized platform for managing asset information.',
-        responsibilities: [
+        role: 'Business Analyst',
+        client: 'X Cloud Inc.',
+        date: '2022',
+        deliverables: [
             'Designed the complete UI specifications for the Master Data module.',
             'Defined data structures for assets, models, serial numbers, and locations.',
             'Standardized UI patterns for List, Create/Edit, and View pages.',
@@ -166,7 +194,10 @@ export const initialContent: AppContent = {
         id: 4,
         title: 'Visitor & Security Management',
         description: 'A system to manage visitor and asset entry/exit using QR codes, enhancing security and streamlining the check-in/check-out process.',
-        responsibilities: [
+        role: 'Business Analyst',
+        client: 'Internal Corporate Project',
+        date: '2021',
+        deliverables: [
             'Defined requirements for four distinct user roles and their permissions.',
             'Designed user flows for pre-registration via email and on-site QR scanning.',
             'Developed logic for asset comparison upon entry and exit to prevent theft.',
@@ -222,6 +253,10 @@ export const initialContent: AppContent = {
         editProjectTitle: 'Edit Project',
         saveProject: 'Save Project',
         projectUrlLabel: 'Project URL (e.g., prototype, repo)',
+        projectRoleLabel: 'Role',
+        projectClientLabel: 'Client / Industry',
+        projectDateLabel: 'Date (Shared)',
+        projectDeliverablesLabel: 'Deliverables',
         visitProjectLink: 'Visit Project Link',
         addExperienceTitle: 'Add New Experience',
         editExperienceTitle: 'Edit Experience',
@@ -279,14 +314,22 @@ export const initialContent: AppContent = {
         title: 'Dự án nổi bật',
         addProject: 'Thêm dự án',
         viewProjectLink: 'Xem Liên kết',
+        overview: 'Tổng quan',
+        role: 'Vai trò',
+        client: 'Khách hàng / Ngành',
+        deliverables: 'Sản phẩm bàn giao',
+        date: 'Ngày',
+        tools: 'Công cụ',
     },
     projectsData: [
       {
         id: 1,
         title: 'Hệ thống Quản lý Hợp đồng (CMS) – Central Retail',
         description: 'Một hệ thống toàn diện để quản lý toàn bộ vòng đời hợp đồng, từ tạo, xem xét, phê duyệt đến ký số/ký tay, lưu trữ và báo cáo.',
-        responsibilities: [
-          'Đóng vai trò Business Analyst và Trợ lý Quản lý Dự án.',
+        role: 'Business Analyst & Trợ lý Quản lý Dự án',
+        client: 'Central Retail tại Việt Nam',
+        date: '2023 - 2024',
+        deliverables: [
           'Phát triển Blueprint, FRD/URD, và luồng UI chi tiết.',
           'Quản lý product backlog và các sprint bằng Jira.',
           'Phối hợp với đội ngũ phát triển/QA và hỗ trợ UAT.',
@@ -299,15 +342,20 @@ export const initialContent: AppContent = {
       },
       {
         id: 2,
-        title: 'RMS 2.0 (Sửa chữa & Bảo trì) – Suntory PepsiCo',
-        description: 'Hệ thống tiếp nhận, xử lý và quản lý các yêu cầu bảo trì thiết bị tại điểm bán hàng, có bảng điều khiển thời gian thực và quản lý phụ tùng.',
-        responsibilities: [
-          'Soạn thảo tài liệu BRD, URD và Blueprint.',
-          'Thiết kế wireframe/mockup cho web và di động bằng Figma.',
-          'Tạo đặc tả chi tiết để tích hợp SAP.',
-          'Phát triển Kế hoạch kiểm thử UAT và điều phối kiểm thử chấp nhận người dùng.',
+        title: 'RMS 2.0 (Sửa chữa & Bảo trì)',
+        description: 'RMS 2.0 là một nền tảng đa chức năng được thiết kế cho bộ phận MEM của Suntory PepsiCo Việt Nam (SPVB). Hệ thống hợp lý hóa việc tiếp nhận, xử lý và quản lý các yêu cầu dịch vụ liên quan đến bảo trì thiết bị tại các cửa hàng bán lẻ. Nó tối ưu hóa hàng tồn kho phụ tùng thông qua việc dán nhãn mã QR và đồng bộ hóa hoàn toàn với SAP, đảm bảo độ chính xác của dữ liệu và hiệu quả hoạt động.',
+        role: 'Business Analyst',
+        client: 'Suntory PepsiCo Vietnam (SPVB) – Bộ phận MEM',
+        date: '',
+        deliverables: [
+          'Tài liệu Yêu cầu Nghiệp vụ (BRD)',
+          'Tài liệu Yêu cầu Người dùng (URD)',
+          'Bản thiết kế Hệ thống (System Blueprint)',
+          'Wireframes, Mockups UI/UX (Figma)',
+          'Thông số kỹ thuật Tích hợp (SAP, MEMS)',
+          'Kế hoạch Kiểm thử Chấp nhận Người dùng (UAT)',
         ],
-        technologies: ['Figma', 'Jira', 'Tích hợp SAP', 'Hệ thống mã QR'],
+        technologies: ['Figma', 'Microsoft Office', 'BPMN', 'Jira', 'AI', 'Visio'],
         coverImage: 'https://picsum.photos/seed/rms1/1200/800',
         detailImages: ['https://picsum.photos/seed/rms2/1200/800'],
         url: '',
@@ -316,7 +364,10 @@ export const initialContent: AppContent = {
         id: 3,
         title: 'Quản lý tồn kho – X Cloud',
         description: 'Module Master Data cho hệ thống quản lý tồn kho X Cloud, cung cấp nền tảng tập trung để quản lý thông tin tài sản.',
-        responsibilities: [
+        role: 'Business Analyst',
+        client: 'X Cloud Inc.',
+        date: '2022',
+        deliverables: [
             'Thiết kế toàn bộ đặc tả UI cho module Master Data.',
             'Xác định cấu trúc dữ liệu cho tài sản, model, số sê-ri và vị trí.',
             'Tiêu chuẩn hóa các mẫu UI cho các trang Danh sách, Tạo/Sửa và Xem.',
@@ -326,11 +377,14 @@ export const initialContent: AppContent = {
         detailImages: ['https://picsum.photos/seed/inventory2/1200/800'],
         url: 'https://github.com/your-repo-link-here',
       },
-        {
+      {
         id: 4,
         title: 'Quản lý Khách và An ninh',
         description: 'Hệ thống quản lý khách và tài sản ra/vào bằng mã QR, tăng cường an ninh và hợp lý hóa quy trình check-in/check-out.',
-        responsibilities: [
+        role: 'Business Analyst',
+        client: 'Dự án nội bộ',
+        date: '2021',
+        deliverables: [
             'Xác định yêu cầu cho bốn vai trò người dùng khác nhau và quyền hạn của họ.',
             'Thiết kế luồng người dùng cho việc đăng ký trước qua email và quét mã QR tại chỗ.',
             'Phát triển logic so sánh tài sản khi ra và vào để chống trộm.',
@@ -386,6 +440,10 @@ export const initialContent: AppContent = {
         editProjectTitle: 'Chỉnh sửa dự án',
         saveProject: 'Lưu dự án',
         projectUrlLabel: 'URL Dự án (VD: prototype, repo)',
+        projectRoleLabel: 'Vai trò',
+        projectClientLabel: 'Khách hàng / Ngành',
+        projectDateLabel: 'Ngày (Chung)',
+        projectDeliverablesLabel: 'Sản phẩm bàn giao',
         visitProjectLink: 'Xem Liên kết Dự án',
         addExperienceTitle: 'Thêm kinh nghiệm mới',
         editExperienceTitle: 'Chỉnh sửa kinh nghiệm',

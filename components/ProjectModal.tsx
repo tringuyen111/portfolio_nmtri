@@ -1,16 +1,36 @@
 
 
+
 import React, { useState, useEffect } from 'react';
 import type { Project } from '../types';
-import { ChevronLeftIcon, ChevronRightIcon, CloseIcon } from './icons';
+import { ChevronLeftIcon, ChevronRightIcon, CloseIcon, Bars3BottomLeftIcon, BriefcaseIcon, BuildingOfficeIcon, CalendarDaysIcon, ListBulletIcon } from './icons';
 
 interface ProjectModalProps {
   project: Project | null;
   onClose: () => void;
   visitProjectLinkText: string;
+  detailLabels: {
+    overview: string;
+    role: string;
+    client: string;
+    deliverables: string;
+    date: string;
+    tools: string;
+  };
 }
 
-const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, visitProjectLinkText }) => {
+const DetailItem: React.FC<{ icon: React.ReactNode, label: string, children: React.ReactNode }> = ({ icon, label, children }) => (
+    <>
+        <div className="flex items-center gap-2 font-medium text-brand-text whitespace-nowrap">
+            <span className="w-5 h-5 text-gray-500">{icon}</span>
+            <span>{label}</span>
+        </div>
+        <div>{children}</div>
+    </>
+);
+
+
+const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, visitProjectLinkText, detailLabels }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
@@ -90,28 +110,43 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, visitProj
         </div>
         
         {/* Details Section */}
-        <div className="w-full flex-shrink-0 p-6 md:p-8 overflow-y-auto h-auto max-h-[45%] md:max-h-[40%] border-t border-gray-200">
-          <h2 className="text-3xl font-serif text-brand-text mb-2">{project.title}</h2>
-          <p className="text-brand-text-secondary mb-6">{project.description}</p>
+        <div className="w-full flex-shrink-0 p-6 md:p-8 overflow-y-auto h-auto max-h-[55%] md:max-h-[50%] border-t border-gray-200">
+          <h2 className="text-3xl font-serif text-brand-text mb-6">{project.title}</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-            <div>
-                <h3 className="text-lg font-bold text-brand-text mb-2">My Responsibilities</h3>
-                <ul className="list-disc list-inside space-y-1 text-brand-text-secondary">
-                  {project.responsibilities.map((resp, i) => <li key={i}>{resp}</li>)}
-                </ul>
-            </div>
+          <div className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-5 items-start text-brand-text-secondary">
+            <DetailItem icon={<Bars3BottomLeftIcon />} label={detailLabels.overview}>
+                <p className="whitespace-pre-line">{project.description}</p>
+            </DetailItem>
+            
+            <DetailItem icon={<BriefcaseIcon />} label={detailLabels.role}>
+                <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded border border-blue-400">{project.role}</span>
+            </DetailItem>
 
-            <div>
-                <h3 className="text-lg font-bold text-brand-text mb-2">Technologies Used</h3>
+            <DetailItem icon={<BuildingOfficeIcon />} label={detailLabels.client}>
+                <p>{project.client}</p>
+            </DetailItem>
+            
+            <DetailItem icon={<Bars3BottomLeftIcon />} label={detailLabels.deliverables}>
+                <ul className="space-y-1">
+                  {project.deliverables.map((item, i) => <li key={i} className="flex items-start"><span className="mr-2 mt-1">-</span><span>{item}</span></li>)}
+                </ul>
+            </DetailItem>
+
+            {project.date && (
+              <DetailItem icon={<CalendarDaysIcon />} label={detailLabels.date}>
+                  <p>{project.date}</p>
+              </DetailItem>
+            )}
+
+            <DetailItem icon={<ListBulletIcon />} label={detailLabels.tools}>
                 <div className="flex flex-wrap gap-2">
                     {project.technologies.map(tech => (
-                        <span key={tech} className="bg-brand-green-light text-brand-green font-medium text-sm px-3 py-1 rounded-full">
+                        <span key={tech} className="bg-gray-100 text-gray-800 text-sm font-medium px-2.5 py-0.5 rounded border border-gray-300">
                             {tech}
                         </span>
                     ))}
                 </div>
-            </div>
+            </DetailItem>
           </div>
 
           {project.url && (

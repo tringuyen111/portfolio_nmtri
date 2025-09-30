@@ -1,9 +1,13 @@
 
+
 export interface Project {
   id: number;
   title: string;
   description: string;
-  responsibilities: string[];
+  role: string;
+  client: string;
+  date: string;
+  deliverables: string[];
   technologies: string[];
   coverImage: string;
   detailImages: string[];
@@ -15,7 +19,7 @@ export interface Experience {
   role: string;
   company: string;
   period: string;
-  description: string;
+  description:string;
   url?: string;
 }
 

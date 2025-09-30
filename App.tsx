@@ -1,4 +1,6 @@
 
+
+
 import React, { useState, useEffect } from 'react';
 import type { Project, Experience, SkillCategory, HeroData, AppContent, AppSettings } from './types';
 import { initialContent } from './i18n';
@@ -211,6 +213,7 @@ const App: React.FC = () => {
             newVnProject.coverImage = newEnProject.coverImage;
             newVnProject.detailImages = newEnProject.detailImages;
             newVnProject.url = newEnProject.url;
+            newVnProject.date = newEnProject.date;
             return {
                 ...prev,
                 en: { ...prev.en, projectsData: [...prev.en.projectsData, newEnProject] },
@@ -434,6 +437,14 @@ const App: React.FC = () => {
         project={selectedProject} 
         onClose={() => setSelectedProject(null)} 
         visitProjectLinkText={currentLangContent.modals.visitProjectLink}
+        detailLabels={{
+            overview: currentLangContent.projects.overview,
+            role: currentLangContent.projects.role,
+            client: currentLangContent.projects.client,
+            deliverables: currentLangContent.projects.deliverables,
+            date: currentLangContent.projects.date,
+            tools: currentLangContent.projects.tools,
+        }}
       />
       
       {/* Admin and Edit Modals */}
@@ -463,7 +474,7 @@ const App: React.FC = () => {
         />
       )}
       {isEditing && editingItem?.type === 'hero' && <HeroEditModal heroData={editingItem.data} onSave={handleSaveHero} onClose={handleCloseModal} title={currentLangContent.modals.editHeroTitle} saveButtonText={currentLangContent.modals.saveChanges} />}
-      {isEditing && editingItem?.type === 'project' && <ProjectEditModal project={editingItem.data} onSave={handleSaveProject} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addProjectTitle : currentLangContent.modals.editProjectTitle} saveButtonText={currentLangContent.modals.saveProject} urlLabelText={currentLangContent.modals.projectUrlLabel} imageResolutionWarningText={currentLangContent.modals.imageResolutionWarning} />}
+      {isEditing && editingItem?.type === 'project' && <ProjectEditModal project={editingItem.data} onSave={handleSaveProject} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addProjectTitle : currentLangContent.modals.editProjectTitle} saveButtonText={currentLangContent.modals.saveProject} urlLabelText={currentLangContent.modals.projectUrlLabel} roleLabelText={currentLangContent.modals.projectRoleLabel} clientLabelText={currentLangContent.modals.projectClientLabel} dateLabelText={currentLangContent.modals.projectDateLabel} deliverablesLabelText={currentLangContent.modals.projectDeliverablesLabel} imageResolutionWarningText={currentLangContent.modals.imageResolutionWarning} />}
       {isEditing && editingItem?.type === 'experience' && <ExperienceEditModal experience={editingItem.data} onSave={handleSaveExperience} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addExperienceTitle : currentLangContent.modals.editExperienceTitle} saveButtonText={currentLangContent.modals.saveExperience} labels={{url: currentLangContent.modals.experienceUrlLabel, periodSettings: currentLangContent.modals.periodSettingsLabel, startDate: currentLangContent.modals.startDateLabel, endDate: currentLangContent.modals.endDateLabel, currentRole: currentLangContent.modals.currentRoleCheckbox, periodPreview: currentLangContent.modals.periodPreviewLabel}} />}
       {isEditing && editingItem?.type === 'skill' && <SkillCategoryEditModal skillCategory={editingItem.data} onSave={handleSaveSkillCategory} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addSkillCategoryTitle : currentLangContent.modals.editSkillCategoryTitle} saveButtonText={currentLangContent.modals.saveSkillCategory} />}
       {isEditing && editingItem?.type === 'contact' && <ContactEditModal contactData={editingItem.data} onSave={handleSaveContact} onClose={handleCloseModal} title={currentLangContent.modals.editContactTitle} saveButtonText={currentLangContent.modals.saveContact} />}

@@ -1,4 +1,6 @@
 
+
+
 import React, { useState, useEffect } from 'react';
 import { CloseIcon, TrashIcon, PlusIcon } from './icons';
 import type { Project, Experience, SkillCategory, HeroData, ContactMethod } from '../types';
@@ -123,10 +125,10 @@ const FormField: React.FC<{ label: string, children: React.ReactNode, instructio
     </div>
 );
 const TextInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props) => (
-    <input {...props} className="w-full border border-gray-300 rounded-md px-3 py-2 placeholder:text-gray-500" />
+    <input {...props} className="w-full border border-gray-300 rounded-md px-3 py-2 placeholder:text-gray-400" />
 );
 const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (props) => (
-    <textarea {...props} rows={4} className="w-full border border-gray-300 rounded-md px-3 py-2 placeholder:text-gray-500" />
+    <textarea {...props} rows={4} className="w-full border border-gray-300 rounded-md px-3 py-2 placeholder:text-gray-400" />
 );
 
 const LanguageTabs: React.FC<{ activeLang: 'en' | 'vn', onSelect: (lang: 'en' | 'vn') => void }> = ({ activeLang, onSelect }) => {
@@ -231,14 +233,22 @@ interface ProjectEditModalProps {
     title: string;
     saveButtonText: string;
     urlLabelText: string;
+    roleLabelText: string;
+    clientLabelText: string;
+    dateLabelText: string;
+    deliverablesLabelText: string;
     imageResolutionWarningText: string;
 }
 const emptyBilingualProject: { en: Omit<Project, 'id'>, vn: Omit<Project, 'id'> } = {
-    en: { title: '', description: '', responsibilities: [], technologies: [], coverImage: '', detailImages: [], url: '' },
-    vn: { title: '', description: '', responsibilities: [], technologies: [], coverImage: '', detailImages: [], url: '' },
+    en: { title: '', description: '', role: '', client: '', date: '', deliverables: [], technologies: [], coverImage: '', detailImages: [], url: '' },
+    vn: { title: '', description: '', role: '', client: '', date: '', deliverables: [], technologies: [], coverImage: '', detailImages: [], url: '' },
 };
 
-export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onSave, onClose, title, saveButtonText, urlLabelText, imageResolutionWarningText }) => {
+export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ 
+    project, onSave, onClose, title, saveButtonText, urlLabelText, 
+    roleLabelText, clientLabelText, dateLabelText, deliverablesLabelText, 
+    imageResolutionWarningText 
+}) => {
     const [formData, setFormData] = useState(project === 'new' ? emptyBilingualProject : project);
     const [activeLang, setActiveLang] = useState<'en' | 'vn'>('en');
     
@@ -251,7 +261,7 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onS
       }));
     };
     
-    const handleSharedChange = (field: 'url', value: string) => {
+    const handleSharedChange = (field: 'url' | 'date', value: string) => {
         setFormData(prev => ({
             en: { ...prev.en, [field]: value },
             vn: { ...prev.vn, [field]: value },
@@ -312,11 +322,17 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onS
             <form onSubmit={handleSubmit}>
                 <LanguageTabs activeLang={activeLang} onSelect={setActiveLang} />
                 <FormField label="Title"><TextInput required value={currentLangData.title} onChange={e => handleTextChange('title', e.target.value)} /></FormField>
+                <FormField label={roleLabelText}><TextInput value={currentLangData.role} onChange={e => handleTextChange('role', e.target.value)} /></FormField>
+                <FormField label={clientLabelText}><TextInput value={currentLangData.client} onChange={e => handleTextChange('client', e.target.value)} /></FormField>
                 <FormField label="Description"><TextArea required value={currentLangData.description} onChange={e => handleTextChange('description', e.target.value)} /></FormField>
-                <FormField label="Responsibilities (one per line)"><TextArea value={currentLangData.responsibilities.join('\n')} onChange={e => handleTextChange('responsibilities', e.target.value.split('\n').filter(r => r.trim() !== ''))} /></FormField>
-                <FormField label="Technologies (comma-separated)"><TextInput value={currentLangData.technologies.join(', ')} onChange={e => handleTextChange('technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t !== ''))} /></FormField>
+                <FormField label={deliverablesLabelText} instruction="One item per line"><TextArea value={currentLangData.deliverables.join('\n')} onChange={e => handleTextChange('deliverables', e.target.value.split('\n').filter(r => r.trim() !== ''))} /></FormField>
+                <FormField label="Technologies" instruction="Comma-separated"><TextInput value={currentLangData.technologies.join(', ')} onChange={e => handleTextChange('technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t !== ''))} /></FormField>
                 
                 <hr className="my-6"/>
+
+                <FormField label={dateLabelText}>
+                    <TextInput value={formData.en.date} onChange={e => handleSharedChange('date', e.target.value)} placeholder="e.g., Q4 2023 or 2023-2024" />
+                </FormField>
 
                 <FormField label={urlLabelText}>
                     <TextInput 
