@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import type { Project, Experience, SkillCategory, HeroData } from './types';
 import { allLanguageData } from './i18n';
@@ -54,9 +55,9 @@ const deepEqual = (obj1: any, obj2: any): boolean => {
 
 type EditingItem = 
     | { type: 'hero'; data: HeroData }
-    | { type: 'project'; data: Project | 'new' }
-    | { type: 'experience'; data: Experience | 'new' }
-    | { type: 'skill'; data: SkillCategory | 'new' };
+    | { type: 'project'; data: { en: Project, vn: Project } | 'new' }
+    | { type: 'experience'; data: { en: Experience, vn: Experience } | 'new' }
+    | { type: 'skill'; data: { en: SkillCategory, vn: SkillCategory } | 'new' };
 
 type Language = 'en' | 'vn';
 
@@ -145,23 +146,42 @@ const App: React.FC = () => {
     });
     setEditingItem(null);
   }
+  
+  const handleEditProject = (projectToEdit: Project) => {
+      if (!draftContent) return;
+      const enProject = draftContent.en.projectsData.find(p => p.id === projectToEdit.id);
+      const vnProject = draftContent.vn.projectsData.find(p => p.id === projectToEdit.id);
+      if (enProject && vnProject) {
+          setEditingItem({ type: 'project', data: { en: enProject, vn: vnProject } });
+      }
+  };
 
-  const handleSaveProject = (projectToSave: Project | Omit<Project, 'id'>) => {
+  const handleSaveProject = (data: { en: Project | Omit<Project, 'id'>, vn: Project | Omit<Project, 'id'> }) => {
     setDraftContent(prev => {
         if (!prev) return null;
-        if ('id' in projectToSave) { // Editing existing
-            const updateProject = (p: Project) => p.id === projectToSave.id ? projectToSave : p;
+        if ('id' in data.en && 'id' in data.vn) { // Editing existing
+            // FIX: The type guard `'id' in data.en` is not narrowing the type as expected.
+            // We cast `data.en` and `data.vn` to their full types to safely access the `id`.
+            const enProject = data.en as Project;
+            const vnProject = data.vn as Project;
+            const updateEn = prev.en.projectsData.map(p => p.id === enProject.id ? enProject : p);
+            const updateVn = prev.vn.projectsData.map(p => p.id === vnProject.id ? vnProject : p);
             return {
                 ...prev,
-                en: { ...prev.en, projectsData: prev.en.projectsData.map(updateProject) },
-                vn: { ...prev.vn, projectsData: prev.vn.projectsData.map(updateProject) },
+                en: { ...prev.en, projectsData: updateEn },
+                vn: { ...prev.vn, projectsData: updateVn },
             };
         } else { // Adding new
-            const newProject = { ...projectToSave, id: Date.now() };
+            const newId = Date.now();
+            const newEnProject: Project = { ...(data.en as Omit<Project, 'id'>), id: newId };
+            const newVnProject: Project = { ...(data.vn as Omit<Project, 'id'>), id: newId };
+            // Sync shared fields
+            newVnProject.coverImage = newEnProject.coverImage;
+            newVnProject.detailImages = newEnProject.detailImages;
             return {
                 ...prev,
-                en: { ...prev.en, projectsData: [...prev.en.projectsData, newProject] },
-                vn: { ...prev.vn, projectsData: [...prev.vn.projectsData, JSON.parse(JSON.stringify(newProject))] },
+                en: { ...prev.en, projectsData: [...prev.en.projectsData, newEnProject] },
+                vn: { ...prev.vn, projectsData: [...prev.vn.projectsData, newVnProject] },
             };
         }
     });
@@ -182,22 +202,38 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSaveExperience = (expToSave: Experience | Omit<Experience, 'id'>) => {
+  const handleEditExperience = (expToEdit: Experience) => {
+      if (!draftContent) return;
+      const enExp = draftContent.en.experiencesData.find(e => e.id === expToEdit.id);
+      const vnExp = draftContent.vn.experiencesData.find(e => e.id === expToEdit.id);
+      if (enExp && vnExp) {
+          setEditingItem({ type: 'experience', data: { en: enExp, vn: vnExp } });
+      }
+  };
+
+  const handleSaveExperience = (data: { en: Experience | Omit<Experience, 'id'>, vn: Experience | Omit<Experience, 'id'> }) => {
     setDraftContent(prev => {
         if (!prev) return null;
-        if ('id' in expToSave) { // Editing existing
-            const updateExp = (e: Experience) => e.id === expToSave.id ? expToSave : e;
+        if ('id' in data.en && 'id' in data.vn) { // Editing existing
+            // FIX: The type guard `'id' in data.en` is not narrowing the type as expected.
+            // We cast `data.en` and `data.vn` to their full types to safely access the `id`.
+            const enExp = data.en as Experience;
+            const vnExp = data.vn as Experience;
+            const updateEn = prev.en.experiencesData.map(e => e.id === enExp.id ? enExp : e);
+            const updateVn = prev.vn.experiencesData.map(e => e.id === vnExp.id ? vnExp : e);
             return {
                 ...prev,
-                en: { ...prev.en, experiencesData: prev.en.experiencesData.map(updateExp) },
-                vn: { ...prev.vn, experiencesData: prev.vn.experiencesData.map(updateExp) },
+                en: { ...prev.en, experiencesData: updateEn },
+                vn: { ...prev.vn, experiencesData: updateVn },
             };
         } else { // Adding new
-            const newExp = { ...expToSave, id: Date.now() };
+            const newId = Date.now();
+            const newEnExp: Experience = { ...(data.en as Omit<Experience, 'id'>), id: newId };
+            const newVnExp: Experience = { ...(data.vn as Omit<Experience, 'id'>), id: newId };
             return {
                 ...prev,
-                en: { ...prev.en, experiencesData: [...prev.en.experiencesData, newExp] },
-                vn: { ...prev.vn, experiencesData: [...prev.vn.experiencesData, JSON.parse(JSON.stringify(newExp))] },
+                en: { ...prev.en, experiencesData: [...prev.en.experiencesData, newEnExp] },
+                vn: { ...prev.vn, experiencesData: [...prev.vn.experiencesData, newVnExp] },
             };
         }
     });
@@ -217,23 +253,39 @@ const App: React.FC = () => {
       });
     }
   };
+  
+  const handleEditSkillCategory = (scToEdit: SkillCategory) => {
+      if (!draftContent) return;
+      const enSc = draftContent.en.skillCategoriesData.find(sc => sc.id === scToEdit.id);
+      const vnSc = draftContent.vn.skillCategoriesData.find(sc => sc.id === scToEdit.id);
+      if (enSc && vnSc) {
+          setEditingItem({ type: 'skill', data: { en: enSc, vn: vnSc } });
+      }
+  };
 
-  const handleSaveSkillCategory = (scToSave: SkillCategory | Omit<SkillCategory, 'id'>) => {
+  const handleSaveSkillCategory = (data: { en: SkillCategory | Omit<SkillCategory, 'id'>, vn: SkillCategory | Omit<SkillCategory, 'id'> }) => {
     setDraftContent(prev => {
         if (!prev) return null;
-        if ('id' in scToSave) { // Editing existing
-            const updateSc = (sc: SkillCategory) => sc.id === scToSave.id ? scToSave : sc;
+        if ('id' in data.en && 'id' in data.vn) { // Editing existing
+            // FIX: The type guard `'id' in data.en` is not narrowing the type as expected.
+            // We cast `data.en` and `data.vn` to their full types to safely access the `id`.
+            const enSc = data.en as SkillCategory;
+            const vnSc = data.vn as SkillCategory;
+            const updateEn = prev.en.skillCategoriesData.map(sc => sc.id === enSc.id ? enSc : sc);
+            const updateVn = prev.vn.skillCategoriesData.map(sc => sc.id === vnSc.id ? vnSc : sc);
             return {
                 ...prev,
-                en: { ...prev.en, skillCategoriesData: prev.en.skillCategoriesData.map(updateSc) },
-                vn: { ...prev.vn, skillCategoriesData: prev.vn.skillCategoriesData.map(updateSc) },
+                en: { ...prev.en, skillCategoriesData: updateEn },
+                vn: { ...prev.vn, skillCategoriesData: updateVn },
             };
         } else { // Adding new
-            const newSc = { ...scToSave, id: Date.now() };
+            const newId = Date.now();
+            const newEnSc: SkillCategory = { ...(data.en as Omit<SkillCategory, 'id'>), id: newId };
+            const newVnSc: SkillCategory = { ...(data.vn as Omit<SkillCategory, 'id'>), id: newId };
             return {
                 ...prev,
-                en: { ...prev.en, skillCategoriesData: [...prev.en.skillCategoriesData, newSc] },
-                vn: { ...prev.vn, skillCategoriesData: [...prev.vn.skillCategoriesData, JSON.parse(JSON.stringify(newSc))] },
+                en: { ...prev.en, skillCategoriesData: [...prev.en.skillCategoriesData, newEnSc] },
+                vn: { ...prev.vn, skillCategoriesData: [...prev.vn.skillCategoriesData, newVnSc] },
             };
         }
     });
@@ -289,7 +341,7 @@ const App: React.FC = () => {
             onViewProject={setSelectedProject} 
             isAdmin={isAdmin}
             onAddProject={() => setEditingItem({ type: 'project', data: 'new' })}
-            onEditProject={(p) => setEditingItem({ type: 'project', data: p })}
+            onEditProject={handleEditProject}
             onDeleteProject={handleDeleteProject}
         />
         <ExperienceComponent 
@@ -300,7 +352,7 @@ const App: React.FC = () => {
             experiences={currentLangContent.experiencesData} 
             isAdmin={isAdmin}
             onAdd={() => setEditingItem({ type: 'experience', data: 'new' })}
-            onEdit={(e) => setEditingItem({ type: 'experience', data: e })}
+            onEdit={handleEditExperience}
             onDelete={handleDeleteExperience}
         />
         <Skills 
@@ -311,7 +363,7 @@ const App: React.FC = () => {
             skillCategories={currentLangContent.skillCategoriesData} 
             isAdmin={isAdmin}
             onAdd={() => setEditingItem({ type: 'skill', data: 'new' })}
-            onEdit={(sc) => setEditingItem({ type: 'skill', data: sc })}
+            onEdit={handleEditSkillCategory}
             onDelete={handleDeleteSkillCategory}
         />
         <Contact 

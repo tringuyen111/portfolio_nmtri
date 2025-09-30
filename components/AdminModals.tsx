@@ -66,7 +66,7 @@ const fileToBase64 = (file: File): Promise<string> => {
 // Generic Modal Wrapper
 const EditModalBase: React.FC<{ title: string, onClose: () => void, children: React.ReactNode }> = ({ title, onClose, children }) => (
     <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" onClick={onClose}>
-        <div className="bg-white rounded-lg p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white rounded-lg p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative" onClick={(e) => e.stopPropagation()}>
             <button onClick={onClose} className="absolute top-4 right-4 text-gray-500"><CloseIcon /></button>
             <h2 className="text-2xl font-bold mb-6 text-center">{title}</h2>
             {children}
@@ -88,6 +88,22 @@ const TextInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props)
 const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (props) => (
     <textarea {...props} rows={4} className="w-full border border-gray-300 rounded-md px-3 py-2" />
 );
+
+const LanguageTabs: React.FC<{ activeLang: 'en' | 'vn', onSelect: (lang: 'en' | 'vn') => void }> = ({ activeLang, onSelect }) => {
+    const baseClasses = "px-4 py-2 text-sm font-medium focus:outline-none transition-colors duration-200";
+    const activeClasses = "border-b-2 border-brand-green text-brand-green";
+    const inactiveClasses = "text-gray-500 hover:text-gray-700";
+
+    return (
+        <div className="border-b border-gray-200 mb-6">
+            <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+                <button onClick={() => onSelect('en')} className={`${baseClasses} ${activeLang === 'en' ? activeClasses : inactiveClasses}`}>English</button>
+                <button onClick={() => onSelect('vn')} className={`${baseClasses} ${activeLang === 'vn' ? activeClasses : inactiveClasses}`}>Vietnamese</button>
+            </nav>
+        </div>
+    );
+};
+
 
 // Hero Edit Modal
 interface HeroEditModalProps {
@@ -145,22 +161,38 @@ export const HeroEditModal: React.FC<HeroEditModalProps> = ({ heroData, onSave, 
 
 // Project Edit Modal
 interface ProjectEditModalProps {
-    project: Project | 'new';
-    onSave: (data: Omit<Project, 'id'> | Project) => void;
+    project: { en: Project, vn: Project } | 'new';
+    onSave: (data: { en: Project | Omit<Project, 'id'>, vn: Project | Omit<Project, 'id'> }) => void;
     onClose: () => void;
     title: string;
     saveButtonText: string;
 }
-const emptyProject: Omit<Project, 'id'> = { title: '', description: '', responsibilities: [], technologies: [], coverImage: '', detailImages: [] };
+const emptyBilingualProject = {
+    en: { title: '', description: '', responsibilities: [], technologies: [], coverImage: '', detailImages: [] },
+    vn: { title: '', description: '', responsibilities: [], technologies: [], coverImage: '', detailImages: [] },
+};
 
 export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onSave, onClose, title, saveButtonText }) => {
-    const [formData, setFormData] = useState(project === 'new' ? emptyProject : project);
+    const [formData, setFormData] = useState(project === 'new' ? emptyBilingualProject : project);
+    const [activeLang, setActiveLang] = useState<'en' | 'vn'>('en');
+    
+    const currentLangData = formData[activeLang];
+    
+    const handleTextChange = (field: keyof Omit<Project, 'id' | 'coverImage' | 'detailImages'>, value: string | string[]) => {
+      setFormData(prev => ({
+        ...prev,
+        [activeLang]: { ...prev[activeLang], [field]: value }
+      }));
+    };
 
     const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             try {
                 const base64 = await fileToBase64(e.target.files[0]);
-                setFormData({...formData, coverImage: base64});
+                setFormData(prev => ({
+                    en: { ...prev.en, coverImage: base64 },
+                    vn: { ...prev.vn, coverImage: base64 },
+                }));
             } catch (error) {
                 alert("Error uploading cover image.");
             }
@@ -170,14 +202,19 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onS
     const handleDetailImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const files = Array.from(e.target.files);
-            if (formData.detailImages.length + files.length > 15) {
+            const currentImages = formData.en.detailImages || [];
+            if (currentImages.length + files.length > 15) {
                 alert('You can have a maximum of 15 detail images in total.');
                 return;
             }
             try {
                 const base64Promises = files.map(fileToBase64);
                 const newBase64Images = await Promise.all(base64Promises);
-                setFormData(prev => ({...prev, detailImages: [...prev.detailImages, ...newBase64Images]}));
+                const updatedImages = [...currentImages, ...newBase64Images];
+                setFormData(prev => ({
+                    en: { ...prev.en, detailImages: updatedImages },
+                    vn: { ...prev.vn, detailImages: updatedImages },
+                }));
             } catch (error) {
                 alert("Error uploading detail images.");
             }
@@ -185,16 +222,17 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onS
     };
 
     const removeDetailImage = (indexToRemove: number) => {
+        const updatedImages = formData.en.detailImages.filter((_, index) => index !== indexToRemove);
         setFormData(prev => ({
-            ...prev,
-            detailImages: prev.detailImages.filter((_, index) => index !== indexToRemove)
+            en: { ...prev.en, detailImages: updatedImages },
+            vn: { ...prev.vn, detailImages: updatedImages },
         }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.title.trim() || !formData.description.trim()) {
-            alert('Title and Description are required.');
+        if (!formData.en.title.trim() || !formData.vn.title.trim()) {
+            alert('Title is required for both languages.');
             return;
         }
         onSave(formData);
@@ -203,20 +241,23 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onS
     return (
         <EditModalBase title={title} onClose={onClose}>
             <form onSubmit={handleSubmit}>
-                <FormField label="Title"><TextInput required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} /></FormField>
-                <FormField label="Description"><TextArea required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} /></FormField>
-                <FormField label="Responsibilities (one per line)"><TextArea value={formData.responsibilities.join('\n')} onChange={e => setFormData({...formData, responsibilities: e.target.value.split('\n').filter(r => r.trim() !== '')})} /></FormField>
-                <FormField label="Technologies (comma-separated)"><TextInput value={formData.technologies.join(', ')} onChange={e => setFormData({...formData, technologies: e.target.value.split(',').map(t => t.trim()).filter(t => t !== '')})} /></FormField>
+                <LanguageTabs activeLang={activeLang} onSelect={setActiveLang} />
+                <FormField label="Title"><TextInput required value={currentLangData.title} onChange={e => handleTextChange('title', e.target.value)} /></FormField>
+                <FormField label="Description"><TextArea required value={currentLangData.description} onChange={e => handleTextChange('description', e.target.value)} /></FormField>
+                <FormField label="Responsibilities (one per line)"><TextArea value={currentLangData.responsibilities.join('\n')} onChange={e => handleTextChange('responsibilities', e.target.value.split('\n').filter(r => r.trim() !== ''))} /></FormField>
+                <FormField label="Technologies (comma-separated)"><TextInput value={currentLangData.technologies.join(', ')} onChange={e => handleTextChange('technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t !== ''))} /></FormField>
                 
-                <FormField label="Cover Image">
+                <hr className="my-6"/>
+
+                <FormField label="Cover Image (Shared)">
                     <input type="file" accept="image/*" onChange={handleCoverImageUpload} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-green-light file:text-brand-green hover:file:bg-brand-green-light/80 mb-2"/>
-                    {formData.coverImage && <img src={formData.coverImage} alt="Cover preview" className="mt-2 rounded-lg w-48 object-cover" />}
+                    {formData.en.coverImage && <img src={formData.en.coverImage} alt="Cover preview" className="mt-2 rounded-lg w-48 object-cover" />}
                 </FormField>
                 
-                <FormField label={`Detail Images (${formData.detailImages.length} / 15)`}>
+                <FormField label={`Detail Images (Shared) (${formData.en.detailImages.length} / 15)`}>
                     <input type="file" multiple accept="image/*" onChange={handleDetailImagesUpload} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-green-light file:text-brand-green hover:file:bg-brand-green-light/80 mb-2" />
                     <div className="flex flex-wrap gap-2 mt-2">
-                        {formData.detailImages.map((img, index) => (
+                        {formData.en.detailImages.map((img, index) => (
                             <div key={index} className="relative">
                                 <img src={img} alt={`detail ${index + 1}`} className="w-24 h-24 object-cover rounded-md"/>
                                 <button type="button" onClick={() => removeDetailImage(index)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">&times;</button>
@@ -225,7 +266,7 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onS
                     </div>
                 </FormField>
                 
-                <button type="submit" className="w-full bg-brand-green text-white py-2 rounded-md mt-4">{saveButtonText}</button>
+                <button type="submit" className="w-full bg-brand-green text-white py-2 rounded-md mt-6">{saveButtonText}</button>
             </form>
         </EditModalBase>
     );
@@ -233,15 +274,29 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onS
 
 // Experience Edit Modal
 interface ExperienceEditModalProps {
-    experience: Experience | 'new';
-    onSave: (data: Experience | Omit<Experience, 'id'>) => void;
+    experience: { en: Experience, vn: Experience } | 'new';
+    onSave: (data: { en: Experience | Omit<Experience, 'id'>, vn: Experience | Omit<Experience, 'id'> }) => void;
     onClose: () => void;
     title: string;
     saveButtonText: string;
 }
-const emptyExperience: Omit<Experience, 'id'> = { role: '', company: '', period: '', description: '' };
+const emptyBilingualExperience = {
+    en: { role: '', company: '', period: '', description: '' },
+    vn: { role: '', company: '', period: '', description: '' },
+};
 export const ExperienceEditModal: React.FC<ExperienceEditModalProps> = ({ experience, onSave, onClose, title, saveButtonText }) => {
-    const [formData, setFormData] = useState(experience === 'new' ? emptyExperience : experience);
+    const [formData, setFormData] = useState(experience === 'new' ? emptyBilingualExperience : experience);
+    const [activeLang, setActiveLang] = useState<'en' | 'vn'>('en');
+
+    const currentLangData = formData[activeLang];
+
+    const handleChange = (field: keyof Omit<Experience, 'id'>, value: string) => {
+      setFormData(prev => ({
+        ...prev,
+        [activeLang]: { ...prev[activeLang], [field]: value }
+      }));
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSave(formData);
@@ -249,10 +304,11 @@ export const ExperienceEditModal: React.FC<ExperienceEditModalProps> = ({ experi
     return (
         <EditModalBase title={title} onClose={onClose}>
             <form onSubmit={handleSubmit}>
-                <FormField label="Role"><TextInput value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})} /></FormField>
-                <FormField label="Company"><TextInput value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} /></FormField>
-                <FormField label="Period"><TextInput value={formData.period} onChange={e => setFormData({...formData, period: e.target.value})} /></FormField>
-                <FormField label="Description"><TextArea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} /></FormField>
+                <LanguageTabs activeLang={activeLang} onSelect={setActiveLang} />
+                <FormField label="Role"><TextInput value={currentLangData.role} onChange={e => handleChange('role', e.target.value)} /></FormField>
+                <FormField label="Company"><TextInput value={currentLangData.company} onChange={e => handleChange('company', e.target.value)} /></FormField>
+                <FormField label="Period"><TextInput value={currentLangData.period} onChange={e => handleChange('period', e.target.value)} /></FormField>
+                <FormField label="Description"><TextArea value={currentLangData.description} onChange={e => handleChange('description', e.target.value)} /></FormField>
                 <button type="submit" className="w-full bg-brand-green text-white py-2 rounded-md mt-4">{saveButtonText}</button>
             </form>
         </EditModalBase>
@@ -261,15 +317,29 @@ export const ExperienceEditModal: React.FC<ExperienceEditModalProps> = ({ experi
 
 // Skill Category Edit Modal
 interface SkillCategoryEditModalProps {
-    skillCategory: SkillCategory | 'new';
-    onSave: (data: SkillCategory | Omit<SkillCategory, 'id'>) => void;
+    skillCategory: { en: SkillCategory, vn: SkillCategory } | 'new';
+    onSave: (data: { en: SkillCategory | Omit<SkillCategory, 'id'>, vn: SkillCategory | Omit<SkillCategory, 'id'> }) => void;
     onClose: () => void;
     title: string;
     saveButtonText: string;
 }
-const emptySkillCategory: Omit<SkillCategory, 'id'> = { title: '', skills: [] };
+const emptyBilingualSkillCategory = {
+    en: { title: '', skills: [] },
+    vn: { title: '', skills: [] },
+};
 export const SkillCategoryEditModal: React.FC<SkillCategoryEditModalProps> = ({ skillCategory, onSave, onClose, title, saveButtonText }) => {
-    const [formData, setFormData] = useState(skillCategory === 'new' ? emptySkillCategory : skillCategory);
+    const [formData, setFormData] = useState(skillCategory === 'new' ? emptyBilingualSkillCategory : skillCategory);
+    const [activeLang, setActiveLang] = useState<'en' | 'vn'>('en');
+    
+    const currentLangData = formData[activeLang];
+
+    const handleChange = (field: keyof Omit<SkillCategory, 'id'>, value: string | string[]) => {
+      setFormData(prev => ({
+        ...prev,
+        [activeLang]: { ...prev[activeLang], [field]: value }
+      }));
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSave(formData);
@@ -277,8 +347,9 @@ export const SkillCategoryEditModal: React.FC<SkillCategoryEditModalProps> = ({ 
     return (
         <EditModalBase title={title} onClose={onClose}>
             <form onSubmit={handleSubmit}>
-                <FormField label="Category Title"><TextInput value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} /></FormField>
-                <FormField label="Skills (comma-separated)"><TextInput value={formData.skills.join(', ')} onChange={e => setFormData({...formData, skills: e.target.value.split(',').map(s => s.trim()).filter(s => s !== '')})} /></FormField>
+                <LanguageTabs activeLang={activeLang} onSelect={setActiveLang} />
+                <FormField label="Category Title"><TextInput value={currentLangData.title} onChange={e => handleChange('title', e.target.value)} /></FormField>
+                <FormField label="Skills (comma-separated)"><TextInput value={currentLangData.skills.join(', ')} onChange={e => handleChange('skills', e.target.value.split(',').map(s => s.trim()).filter(s => s !== ''))} /></FormField>
                 <button type="submit" className="w-full bg-brand-green text-white py-2 rounded-md mt-4">{saveButtonText}</button>
             </form>
         </EditModalBase>
