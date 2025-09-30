@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useState, useEffect } from 'react';
 import { CloseIcon, TrashIcon, PlusIcon } from './icons';
 import type { Project, Experience, SkillCategory, HeroData, ContactMethod } from '../types';
@@ -232,15 +233,17 @@ interface ProjectEditModalProps {
     onClose: () => void;
     title: string;
     saveButtonText: string;
-    urlLabelText: string;
-    roleLabelText: string;
-    clientLabelText: string;
-    dateLabelText: string;
-    deliverablesLabelText: string;
-    imageResolutionWarningText: string;
-    projectTitleLabel: string;
-    projectDescriptionLabel: string;
-    projectTechnologiesLabel: string;
+    labels: {
+        url: string;
+        role: string;
+        client: string;
+        date: string;
+        deliverables: string;
+        imageResolutionWarning: string;
+        title: string;
+        description: string;
+        technologies: string;
+    }
 }
 const emptyBilingualProject: { en: Omit<Project, 'id'>, vn: Omit<Project, 'id'> } = {
     en: { title: '', description: '', role: '', client: '', date: '', deliverables: [], technologies: [], coverImage: '', detailImages: [], url: '' },
@@ -248,9 +251,7 @@ const emptyBilingualProject: { en: Omit<Project, 'id'>, vn: Omit<Project, 'id'> 
 };
 
 export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ 
-    project, onSave, onClose, title, saveButtonText, urlLabelText, 
-    roleLabelText, clientLabelText, dateLabelText, deliverablesLabelText, 
-    imageResolutionWarningText, projectTitleLabel, projectDescriptionLabel, projectTechnologiesLabel
+    project, onSave, onClose, title, saveButtonText, labels
 }) => {
     const [formData, setFormData] = useState(project === 'new' ? emptyBilingualProject : project);
     const [activeLang, setActiveLang] = useState<'en' | 'vn'>('en');
@@ -324,20 +325,20 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({
         <EditModalBase title={title} onClose={onClose}>
             <form onSubmit={handleSubmit}>
                 <LanguageTabs activeLang={activeLang} onSelect={setActiveLang} />
-                <FormField label={projectTitleLabel}><TextInput required value={currentLangData.title} onChange={e => handleTextChange('title', e.target.value)} /></FormField>
-                <FormField label={roleLabelText}><TextInput value={currentLangData.role} onChange={e => handleTextChange('role', e.target.value)} /></FormField>
-                <FormField label={clientLabelText}><TextInput value={currentLangData.client} onChange={e => handleTextChange('client', e.target.value)} /></FormField>
-                <FormField label={projectDescriptionLabel}><TextArea required value={currentLangData.description} onChange={e => handleTextChange('description', e.target.value)} /></FormField>
-                <FormField label={deliverablesLabelText} instruction="One item per line"><TextArea value={(currentLangData.deliverables || []).join('\n')} onChange={e => handleTextChange('deliverables', e.target.value.split('\n').filter(r => r.trim() !== ''))} /></FormField>
-                <FormField label={projectTechnologiesLabel} instruction="Comma-separated"><TextInput value={(currentLangData.technologies || []).join(', ')} onChange={e => handleTextChange('technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t !== ''))} /></FormField>
+                <FormField label={labels.title}><TextInput required value={currentLangData.title} onChange={e => handleTextChange('title', e.target.value)} /></FormField>
+                <FormField label={labels.role}><TextInput value={currentLangData.role} onChange={e => handleTextChange('role', e.target.value)} /></FormField>
+                <FormField label={labels.client}><TextInput value={currentLangData.client} onChange={e => handleTextChange('client', e.target.value)} /></FormField>
+                <FormField label={labels.description}><TextArea required value={currentLangData.description} onChange={e => handleTextChange('description', e.target.value)} /></FormField>
+                <FormField label={labels.deliverables} instruction="One item per line"><TextArea value={(currentLangData.deliverables || []).join('\n')} onChange={e => handleTextChange('deliverables', e.target.value.split('\n').filter(r => r.trim() !== ''))} /></FormField>
+                <FormField label={labels.technologies} instruction="Comma-separated"><TextInput value={(currentLangData.technologies || []).join(', ')} onChange={e => handleTextChange('technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t !== ''))} /></FormField>
                 
                 <hr className="my-6"/>
 
-                <FormField label={dateLabelText}>
+                <FormField label={labels.date}>
                     <TextInput value={formData.en.date} onChange={e => handleSharedChange('date', e.target.value)} placeholder="e.g., Q4 2023 or 2023-2024" />
                 </FormField>
 
-                <FormField label={urlLabelText}>
+                <FormField label={labels.url}>
                     <TextInput 
                         value={formData.en.url || ''} 
                         onChange={e => handleSharedChange('url', e.target.value)} 
@@ -347,13 +348,13 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({
 
                 <FormField label="Cover Image (Shared)">
                     <input type="file" accept="image/*" onChange={handleCoverImageUpload} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-green-light file:text-brand-green hover:file:bg-brand-green-light/80 mb-2"/>
-                    <p className="text-xs text-gray-500 mt-1">{imageResolutionWarningText}</p>
+                    <p className="text-xs text-gray-500 mt-1">{labels.imageResolutionWarning}</p>
                     {formData.en.coverImage && <img src={formData.en.coverImage} alt="Cover preview" className="mt-2 rounded-lg w-48 object-cover" />}
                 </FormField>
                 
                 <FormField label={`Detail Images (Shared) (${(formData.en.detailImages || []).length})`}>
                     <input type="file" multiple accept="image/*" onChange={handleDetailImagesUpload} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-green-light file:text-brand-green hover:file:bg-brand-green-light/80 mb-2" />
-                    <p className="text-xs text-gray-500 mt-1">{imageResolutionWarningText}</p>
+                    <p className="text-xs text-gray-500 mt-1">{labels.imageResolutionWarning}</p>
                     <div className="flex flex-wrap gap-2 mt-2">
                         {(formData.en.detailImages || []).map((img, index) => (
                             <div key={index} className="relative">
