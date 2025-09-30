@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { NavLink } from '../types';
 import { MenuIcon, CloseIcon } from './icons';
@@ -30,6 +29,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ language, onLanguag
 
 interface HeaderProps {
     isAdmin: boolean;
+    isEditing: boolean;
     language: Language;
     onLanguageChange: (lang: Language) => void;
     navLinks: NavLink[];
@@ -39,11 +39,16 @@ interface HeaderProps {
     onCancel: () => void;
     saveText: string;
     cancelText: string;
+    onLogout: () => void;
+    logoutText: string;
+    onStartEditing: () => void;
+    startEditingText: string;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
-    isAdmin, language, onLanguageChange, navLinks,
-    onAdminLoginClick, adminLoginText, onSave, onCancel, saveText, cancelText 
+    isAdmin, isEditing, language, onLanguageChange, navLinks,
+    onAdminLoginClick, adminLoginText, onSave, onCancel, saveText, cancelText,
+    onLogout, logoutText, onStartEditing, startEditingText
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -65,6 +70,70 @@ const Header: React.FC<HeaderProps> = ({
         });
     }
   };
+
+  const renderAdminControls = () => {
+    if (isEditing) {
+        return (
+            <div className="flex items-center space-x-2">
+                <button onClick={onSave} className="bg-blue-600 text-white font-medium py-2 px-5 rounded-full hover:bg-blue-700 transition-colors duration-300">
+                    {saveText}
+                </button>
+                <button onClick={onCancel} className="bg-gray-500 text-white font-medium py-2 px-5 rounded-full hover:bg-gray-600 transition-colors duration-300">
+                    {cancelText}
+                </button>
+            </div>
+        );
+    }
+    if (isAdmin) {
+         return (
+            <div className="flex items-center space-x-2">
+                <button onClick={onStartEditing} className="bg-brand-green text-white font-medium py-2 px-5 rounded-full hover:opacity-90 transition-opacity duration-300">
+                    {startEditingText}
+                </button>
+                <button onClick={onLogout} className="bg-red-600 text-white font-medium py-2 px-5 rounded-full hover:bg-red-700 transition-colors duration-300">
+                    {logoutText}
+                </button>
+            </div>
+        );
+    }
+    return (
+        <button onClick={onAdminLoginClick} className="bg-brand-green text-white font-medium py-2 px-5 rounded-full hover:opacity-90 transition-opacity duration-300">
+            {adminLoginText}
+        </button>
+    );
+  };
+
+  const renderMobileAdminControls = () => {
+    if (isEditing) {
+        return (
+            <div className="flex flex-col items-center space-y-4">
+                <button onClick={() => { onSave(); setIsMenuOpen(false); }} className="bg-blue-600 text-white font-medium py-3 px-8 text-lg rounded-full">
+                    {saveText}
+                </button>
+                <button onClick={() => { onCancel(); setIsMenuOpen(false); }} className="bg-gray-500 text-white font-medium py-3 px-8 text-lg rounded-full">
+                    {cancelText}
+                </button>
+            </div>
+        );
+    }
+    if (isAdmin) {
+        return (
+            <div className="flex flex-col items-center space-y-4">
+                 <button onClick={() => { onStartEditing(); setIsMenuOpen(false); }} className="bg-brand-green text-white font-medium py-3 px-8 text-lg rounded-full">
+                    {startEditingText}
+                </button>
+                <button onClick={() => { onLogout(); setIsMenuOpen(false); }} className="bg-red-600 text-white font-medium py-3 px-8 text-lg rounded-full">
+                    {logoutText}
+                </button>
+            </div>
+        );
+    }
+    return (
+        <button onClick={() => { onAdminLoginClick(); setIsMenuOpen(false); }} className="bg-brand-green text-white font-medium py-3 px-8 text-lg rounded-full">
+            {adminLoginText}
+        </button>
+    );
+  }
     
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-brand-background/80 backdrop-blur-sm">
@@ -76,20 +145,7 @@ const Header: React.FC<HeaderProps> = ({
           ))}
         </nav>
         <div className="hidden md:flex items-center space-x-4">
-            {isAdmin ? (
-                <div className="flex items-center space-x-2">
-                    <button onClick={onSave} className="bg-blue-600 text-white font-medium py-2 px-5 rounded-full hover:bg-blue-700 transition-colors duration-300">
-                        {saveText}
-                    </button>
-                    <button onClick={onCancel} className="bg-gray-500 text-white font-medium py-2 px-5 rounded-full hover:bg-gray-600 transition-colors duration-300">
-                        {cancelText}
-                    </button>
-                </div>
-            ) : (
-                <button onClick={onAdminLoginClick} className="bg-brand-green text-white font-medium py-2 px-5 rounded-full hover:opacity-90 transition-opacity duration-300">
-                  {adminLoginText}
-                </button>
-            )}
+            {renderAdminControls()}
             <LanguageSwitcher language={language} onLanguageChange={onLanguageChange} />
         </div>
         {/* Mobile Menu Button */}
@@ -114,20 +170,7 @@ const Header: React.FC<HeaderProps> = ({
               <a key={link.href} href={link.href} onClick={(e) => handleNavClick(e, link.href)} className="text-3xl font-serif text-brand-text-secondary hover:text-brand-text transition-colors duration-300">{link.text}</a>
             ))}
              <div className="absolute bottom-24 flex flex-col items-center space-y-6">
-                {isAdmin ? (
-                    <div className="flex flex-col items-center space-y-4">
-                        <button onClick={() => { onSave(); setIsMenuOpen(false); }} className="bg-blue-600 text-white font-medium py-3 px-8 text-lg rounded-full">
-                            {saveText}
-                        </button>
-                        <button onClick={() => { onCancel(); setIsMenuOpen(false); }} className="bg-gray-500 text-white font-medium py-3 px-8 text-lg rounded-full">
-                            {cancelText}
-                        </button>
-                    </div>
-                ) : (
-                    <button onClick={() => { onAdminLoginClick(); setIsMenuOpen(false); }} className="bg-brand-green text-white font-medium py-3 px-8 text-lg rounded-full">
-                      {adminLoginText}
-                    </button>
-                )}
+                {renderMobileAdminControls()}
                 <LanguageSwitcher language={language} onLanguageChange={onLanguageChange} />
              </div>
           </nav>

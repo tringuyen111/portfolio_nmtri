@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { CloseIcon, TrashIcon, PlusIcon } from './icons';
 import type { Project, Experience, SkillCategory, HeroData, ContactMethod } from '../types';
@@ -7,24 +6,45 @@ import type { LanguageContent } from '../i18n';
 interface AdminLoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: () => void;
+  onLogin: (username: string, password: string) => boolean;
   title: string;
   loginButtonText: string;
+  usernamePlaceholder: string;
+  passwordPlaceholder: string;
+  loginErrorText: string;
+  forgotPasswordLinkText: string;
+  forgotPasswordHelpText: string;
 }
 
-export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onLoginSuccess, title, loginButtonText }) => {
+export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ 
+    isOpen, onClose, onLogin, title, loginButtonText, 
+    usernamePlaceholder, passwordPlaceholder, loginErrorText,
+    forgotPasswordLinkText, forgotPasswordHelpText
+}) => {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showHelp, setShowHelp] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      // Reset state when modal is closed
+      setUsername('');
+      setPassword('');
+      setError('');
+      setShowHelp(false);
+    }
+  }, [isOpen]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'nmt29072002') {
-      onLoginSuccess();
+    setError('');
+    setShowHelp(false);
+    const success = onLogin(username, password);
+    if (success) {
       onClose();
-      setPassword('');
-      setError('');
     } else {
-      setError('Incorrect password.');
+      setError(loginErrorText);
     }
   };
 
@@ -37,17 +57,35 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
         <h2 className="text-2xl font-bold mb-4 text-center">{title}</h2>
         <form onSubmit={handleLogin}>
           <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder={usernamePlaceholder}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4"
+            autoFocus
+          />
+          <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password"
+            placeholder={passwordPlaceholder}
             className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4"
           />
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
           <button type="submit" className="w-full bg-brand-green text-white py-2 rounded-md">
             {loginButtonText}
           </button>
         </form>
+        <div className="text-center mt-4">
+            <button onClick={() => setShowHelp(true)} className="text-sm text-gray-500 hover:underline">
+                {forgotPasswordLinkText}
+            </button>
+        </div>
+        {showHelp && (
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-md text-center">
+                {forgotPasswordHelpText}
+            </div>
+        )}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ export interface LanguageContent {
     adminLogin: string;
     save: string;
     cancel: string;
+    startEditing: string;
   };
   hero: HeroData;
   projects: {
@@ -38,6 +39,11 @@ export interface LanguageContent {
   modals: {
       loginTitle: string;
       loginButton: string;
+      loginUsernamePlaceholder: string;
+      loginPasswordPlaceholder: string;
+      loginError: string;
+      forgotPasswordLink: string;
+      forgotPasswordHelp: string;
       editHeroTitle: string;
       saveChanges: string;
       addProjectTitle: string;
@@ -75,6 +81,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
       adminLogin: 'Admin',
       save: 'Save',
       cancel: 'Cancel',
+      startEditing: 'Start Editing',
     },
     hero: {
       kicker: 'IT Business Analyst',
@@ -187,6 +194,11 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
     modals: {
         loginTitle: 'Admin Login',
         loginButton: 'Login',
+        loginUsernamePlaceholder: 'Username',
+        loginPasswordPlaceholder: 'Password',
+        loginError: 'Invalid username or password.',
+        forgotPasswordLink: 'Forgot Password?',
+        forgotPasswordHelp: 'Password cannot be reset automatically. Please contact the site administrator if you have forgotten your credentials.',
         editHeroTitle: 'Edit Hero Section',
         saveChanges: 'Save Changes',
         addProjectTitle: 'Add New Project',
@@ -222,6 +234,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
       adminLogin: 'Quản trị',
       save: 'Lưu',
       cancel: 'Hủy',
+      startEditing: 'Bắt đầu Chỉnh sửa',
     },
     hero: {
       kicker: 'Chuyên viên Phân tích Nghiệp vụ CNTT',
@@ -334,6 +347,11 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
     modals: {
         loginTitle: 'Đăng nhập Admin',
         loginButton: 'Đăng nhập',
+        loginUsernamePlaceholder: 'Tên đăng nhập',
+        loginPasswordPlaceholder: 'Mật khẩu',
+        loginError: 'Tên đăng nhập hoặc mật khẩu không đúng.',
+        forgotPasswordLink: 'Quên mật khẩu?',
+        forgotPasswordHelp: 'Mật khẩu không thể tự động đặt lại. Vui lòng liên hệ quản trị viên trang web nếu bạn quên thông tin đăng nhập.',
         editHeroTitle: 'Chỉnh sửa Hero Section',
         saveChanges: 'Lưu thay đổi',
         addProjectTitle: 'Thêm dự án mới',

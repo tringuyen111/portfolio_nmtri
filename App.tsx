@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import type { Project, Experience, SkillCategory, HeroData } from './types';
 import { allLanguageData } from './i18n';
@@ -72,13 +70,15 @@ const App: React.FC = () => {
   
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(() => !!sessionStorage.getItem('isAdminLoggedIn'));
   const [editingItem, setEditingItem] = useState<EditingItem | null>(null);
+
+  const isEditing = draftContent !== null;
 
   // --- State Persistence Effect ---
   useEffect(() => {
-      // Don't persist while in admin mode to avoid saving partial drafts
-      if (!isAdmin) {
+      // Don't persist while in editing mode to avoid saving partial drafts
+      if (!isEditing) {
           try {
               localStorage.setItem(LS_KEY_CONTENT, JSON.stringify(content));
           } catch (error) {
@@ -87,11 +87,11 @@ const App: React.FC = () => {
               alert(alertMessage);
           }
       }
-  }, [content, isAdmin, language]);
+  }, [content, isEditing, language]);
   
   // --- Unsaved Changes Warning Effect ---
   useEffect(() => {
-    const hasUnsavedChanges = isAdmin && draftContent && !deepEqual(content, draftContent);
+    const hasUnsavedChanges = isEditing && draftContent && !deepEqual(content, draftContent);
 
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (hasUnsavedChanges) {
@@ -107,32 +107,46 @@ const App: React.FC = () => {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [isAdmin, draftContent, content, language]);
+  }, [isEditing, draftContent, content, language]);
   // --- End Effect ---
 
-  const handleAdminLogin = () => {
-    setDraftContent(JSON.parse(JSON.stringify(content))); // Deep copy to create a draft
-    setIsAdmin(true);
+  const handleLoginAttempt = (username: string, password: string): boolean => {
+      if (username === 'nguyenmanhtri2907@gmail.com' && password === 'nmt29072002') {
+          sessionStorage.setItem('isAdminLoggedIn', 'true');
+          setIsAdmin(true);
+          setDraftContent(JSON.parse(JSON.stringify(content))); // Enter edit mode immediately
+          return true;
+      }
+      return false;
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('isAdminLoggedIn');
+    setIsAdmin(false);
+    setDraftContent(null);
+    setEditingItem(null);
+  };
+
+  const handleStartEditing = () => {
+      if (isAdmin) {
+          setDraftContent(JSON.parse(JSON.stringify(content)));
+      }
   };
 
   const handleCancel = () => {
-    // Discard draft and exit admin mode
     setDraftContent(null);
-    setIsAdmin(false);
     setEditingItem(null);
   };
 
   const handleSaveChanges = () => {
-    // Commit draft to main content state and exit admin mode
     if (draftContent) {
       setContent(draftContent);
     }
     setDraftContent(null);
-    setIsAdmin(false);
     setEditingItem(null);
   };
 
-  const activeContent = isAdmin && draftContent ? draftContent : content;
+  const activeContent = isEditing && draftContent ? draftContent : content;
   const currentLangContent = activeContent[language];
 
   const handleSaveHero = (data: { en: HeroData, vn: HeroData }) => {
@@ -327,16 +341,21 @@ const App: React.FC = () => {
   return (
     <div className="bg-brand-background font-sans text-brand-text">
       <Header 
-        isAdmin={isAdmin} 
+        isAdmin={isAdmin}
+        isEditing={isEditing} 
         onAdminLoginClick={() => setLoginModalOpen(true)}
         onSave={handleSaveChanges}
         onCancel={handleCancel}
+        onLogout={handleLogout}
+        onStartEditing={handleStartEditing}
         language={language}
         onLanguageChange={setLanguage}
         navLinks={currentLangContent.navLinks}
         adminLoginText={content[language].header.adminLogin}
         saveText={content[language].header.save}
         cancelText={content[language].header.cancel}
+        logoutText={content[language].header.logout}
+        startEditingText={content[language].header.startEditing}
       />
       <main>
         <Hero 
@@ -345,7 +364,7 @@ const App: React.FC = () => {
             paragraphs={currentLangContent.hero.paragraphs}
             imageUrl={currentLangContent.hero.imageUrl}
             isAdmin={isAdmin}
-            onEdit={() => setEditingItem({ type: 'hero', data: { en: activeContent.en.hero, vn: activeContent.vn.hero } })}
+            onEdit={() => isEditing && setEditingItem({ type: 'hero', data: { en: activeContent.en.hero, vn: activeContent.vn.hero } })}
         />
         <Projects 
             sectionTitle={currentLangContent.projects.sectionTitle}
@@ -354,7 +373,7 @@ const App: React.FC = () => {
             viewProjectLinkText={currentLangContent.projects.viewProjectLink}
             projects={currentLangContent.projectsData} 
             onViewProject={setSelectedProject} 
-            isAdmin={isAdmin}
+            isAdmin={isEditing}
             onAddProject={() => setEditingItem({ type: 'project', data: 'new' })}
             onEditProject={handleEditProject}
             onDeleteProject={handleDeleteProject}
@@ -365,7 +384,7 @@ const App: React.FC = () => {
             subtitle={currentLangContent.experience.subtitle}
             addExperienceText={currentLangContent.experience.addExperience}
             experiences={currentLangContent.experiencesData} 
-            isAdmin={isAdmin}
+            isAdmin={isEditing}
             onAdd={() => setEditingItem({ type: 'experience', data: 'new' })}
             onEdit={handleEditExperience}
             onDelete={handleDeleteExperience}
@@ -376,7 +395,7 @@ const App: React.FC = () => {
             subtitle={currentLangContent.skills.subtitle}
             addSkillCategoryText={currentLangContent.skills.addSkillCategory}
             skillCategories={currentLangContent.skillCategoriesData} 
-            isAdmin={isAdmin}
+            isAdmin={isEditing}
             onAdd={() => setEditingItem({ type: 'skill', data: 'new' })}
             onEdit={handleEditSkillCategory}
             onDelete={handleDeleteSkillCategory}
@@ -386,7 +405,7 @@ const App: React.FC = () => {
             subtitle={currentLangContent.contact.subtitle}
             contactMethods={currentLangContent.contact.contactMethods}
             isAdmin={isAdmin}
-            onEdit={() => setEditingItem({ type: 'contact', data: { en: activeContent.en.contact, vn: activeContent.vn.contact } })}
+            onEdit={() => isEditing && setEditingItem({ type: 'contact', data: { en: activeContent.en.contact, vn: activeContent.vn.contact } })}
         />
       </main>
       <Footer 
@@ -404,15 +423,20 @@ const App: React.FC = () => {
       <AdminLoginModal 
         isOpen={isLoginModalOpen}
         onClose={() => setLoginModalOpen(false)}
-        onLoginSuccess={handleAdminLogin}
+        onLogin={handleLoginAttempt}
         title={currentLangContent.modals.loginTitle}
         loginButtonText={currentLangContent.modals.loginButton}
+        usernamePlaceholder={currentLangContent.modals.loginUsernamePlaceholder}
+        passwordPlaceholder={currentLangContent.modals.loginPasswordPlaceholder}
+        loginErrorText={currentLangContent.modals.loginError}
+        forgotPasswordLinkText={currentLangContent.modals.forgotPasswordLink}
+        forgotPasswordHelpText={currentLangContent.modals.forgotPasswordHelp}
       />
-      {editingItem?.type === 'hero' && <HeroEditModal heroData={editingItem.data} onSave={handleSaveHero} onClose={handleCloseModal} title={currentLangContent.modals.editHeroTitle} saveButtonText={currentLangContent.modals.saveChanges} />}
-      {editingItem?.type === 'project' && <ProjectEditModal project={editingItem.data} onSave={handleSaveProject} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addProjectTitle : currentLangContent.modals.editProjectTitle} saveButtonText={currentLangContent.modals.saveProject} urlLabelText={currentLangContent.modals.projectUrlLabel} imageResolutionWarningText={currentLangContent.modals.imageResolutionWarning} />}
-      {editingItem?.type === 'experience' && <ExperienceEditModal experience={editingItem.data} onSave={handleSaveExperience} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addExperienceTitle : currentLangContent.modals.editExperienceTitle} saveButtonText={currentLangContent.modals.saveExperience} />}
-      {editingItem?.type === 'skill' && <SkillCategoryEditModal skillCategory={editingItem.data} onSave={handleSaveSkillCategory} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addSkillCategoryTitle : currentLangContent.modals.editSkillCategoryTitle} saveButtonText={currentLangContent.modals.saveSkillCategory} />}
-      {editingItem?.type === 'contact' && <ContactEditModal contactData={editingItem.data} onSave={handleSaveContact} onClose={handleCloseModal} title={currentLangContent.modals.editContactTitle} saveButtonText={currentLangContent.modals.saveContact} />}
+      {isEditing && editingItem?.type === 'hero' && <HeroEditModal heroData={editingItem.data} onSave={handleSaveHero} onClose={handleCloseModal} title={currentLangContent.modals.editHeroTitle} saveButtonText={currentLangContent.modals.saveChanges} />}
+      {isEditing && editingItem?.type === 'project' && <ProjectEditModal project={editingItem.data} onSave={handleSaveProject} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addProjectTitle : currentLangContent.modals.editProjectTitle} saveButtonText={currentLangContent.modals.saveProject} urlLabelText={currentLangContent.modals.projectUrlLabel} imageResolutionWarningText={currentLangContent.modals.imageResolutionWarning} />}
+      {isEditing && editingItem?.type === 'experience' && <ExperienceEditModal experience={editingItem.data} onSave={handleSaveExperience} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addExperienceTitle : currentLangContent.modals.editExperienceTitle} saveButtonText={currentLangContent.modals.saveExperience} />}
+      {isEditing && editingItem?.type === 'skill' && <SkillCategoryEditModal skillCategory={editingItem.data} onSave={handleSaveSkillCategory} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addSkillCategoryTitle : currentLangContent.modals.editSkillCategoryTitle} saveButtonText={currentLangContent.modals.saveSkillCategory} />}
+      {isEditing && editingItem?.type === 'contact' && <ContactEditModal contactData={editingItem.data} onSave={handleSaveContact} onClose={handleCloseModal} title={currentLangContent.modals.editContactTitle} saveButtonText={currentLangContent.modals.saveContact} />}
 
     </div>
   );
