@@ -7,6 +7,7 @@ interface ProjectsProps {
   sectionTitle: string;
   title: string;
   addProjectText: string;
+  viewProjectLinkText: string;
   projects: Project[];
   onViewProject: (project: Project) => void;
   isAdmin: boolean;
@@ -15,7 +16,7 @@ interface ProjectsProps {
   onDeleteProject: (id: number) => void;
 }
 
-const Projects: React.FC<ProjectsProps> = ({ sectionTitle, title, addProjectText, projects, onViewProject, isAdmin, onAddProject, onEditProject, onDeleteProject }) => {
+const Projects: React.FC<ProjectsProps> = ({ sectionTitle, title, addProjectText, viewProjectLinkText, projects, onViewProject, isAdmin, onAddProject, onEditProject, onDeleteProject }) => {
   
   const handleProjectClick = (project: Project) => {
     if (isAdmin) {
@@ -77,7 +78,18 @@ const Projects: React.FC<ProjectsProps> = ({ sectionTitle, title, addProjectText
                 )}
               </div>
               <h3 className="text-2xl font-serif text-brand-text">{project.title}</h3>
-              <p className="text-brand-text-secondary mt-1">
+              {project.url && (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-block mt-2 bg-brand-green-light text-brand-green font-medium text-sm px-3 py-1 rounded-full hover:bg-brand-green hover:text-white transition-all"
+                >
+                  {viewProjectLinkText}
+                </a>
+              )}
+              <p className="text-brand-text-secondary mt-2">
                 {project.description.substring(0, 100)}...
               </p>
             </div>

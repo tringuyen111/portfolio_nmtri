@@ -13,6 +13,7 @@ export interface LanguageContent {
     sectionTitle: string;
     title: string;
     addProject: string;
+    viewProjectLink: string;
   };
   projectsData: Project[];
   experience: {
@@ -42,17 +43,22 @@ export interface LanguageContent {
       addProjectTitle: string;
       editProjectTitle: string;
       saveProject: string;
+      projectUrlLabel: string;
+      visitProjectLink: string;
       addExperienceTitle: string;
       editExperienceTitle: string;
       saveExperience: string;
       addSkillCategoryTitle: string;
       editSkillCategoryTitle: string;
       saveSkillCategory: string;
+      editContactTitle: string;
+      saveContact: string;
       deleteProjectConfirmation: string;
       deleteExperienceConfirmation: string;
       deleteSkillCategoryConfirmation: string;
       localStorageError: string;
       unsavedChangesWarning: string;
+      imageResolutionWarning: string;
   }
 }
 
@@ -84,6 +90,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         sectionTitle: 'Portfolio',
         title: 'Featured Projects',
         addProject: 'Add Project',
+        viewProjectLink: 'View Link',
     },
     projectsData: [
       {
@@ -98,8 +105,9 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
           'Designed dynamic approval workflows and security matrix.'
         ],
         technologies: ['Jira', 'Figma', 'SAP Integration', 'Digital Signature API'],
-        coverImage: 'https://picsum.photos/seed/cms1/1200/800',
+        coverImage: 'https://images.unsplash.com/photo-1556740714-a8395b3bf30f?q=80&w=1200&auto=format&fit=crop',
         detailImages: ['https://picsum.photos/seed/cms2/1200/800', 'https://picsum.photos/seed/cms3/1200/800'],
+        url: 'https://www.figma.com/proto/your-prototype-link-here',
       },
       {
         id: 2,
@@ -114,6 +122,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         technologies: ['Figma', 'Jira', 'SAP Integration', 'QR Code Systems'],
         coverImage: 'https://picsum.photos/seed/rms1/1200/800',
         detailImages: ['https://picsum.photos/seed/rms2/1200/800'],
+        url: '',
       },
       {
         id: 3,
@@ -127,6 +136,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         technologies: ['Figma', 'Jira', 'Cloud Architecture'],
         coverImage: 'https://picsum.photos/seed/inventory1/1200/800',
         detailImages: ['https://picsum.photos/seed/inventory2/1200/800'],
+        url: 'https://github.com/your-repo-link-here',
       },
       {
         id: 4,
@@ -140,6 +150,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         technologies: ['QR Code Systems', 'Figma', 'Access Control'],
         coverImage: 'https://picsum.photos/seed/visitor1/1200/800',
         detailImages: [],
+        url: '',
       },
     ],
     experience: {
@@ -181,17 +192,22 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         addProjectTitle: 'Add New Project',
         editProjectTitle: 'Edit Project',
         saveProject: 'Save Project',
+        projectUrlLabel: 'Project URL (e.g., prototype, repo)',
+        visitProjectLink: 'Visit Project Link',
         addExperienceTitle: 'Add New Experience',
         editExperienceTitle: 'Edit Experience',
         saveExperience: 'Save Experience',
         addSkillCategoryTitle: 'Add New Skill Category',
         editSkillCategoryTitle: 'Edit Skill Category',
         saveSkillCategory: 'Save Skill Category',
+        editContactTitle: 'Edit Contact Section',
+        saveContact: 'Save Contact',
         deleteProjectConfirmation: 'Are you sure you want to delete this project? This action cannot be undone.',
         deleteExperienceConfirmation: 'Are you sure you want to delete this experience entry? This action cannot be undone.',
         deleteSkillCategoryConfirmation: 'Are you sure you want to delete this skill category? This action cannot be undone.',
         localStorageError: 'Could not save changes. You may have run out of local storage space, which can happen if you upload too many large images. Please try reducing the size or number of images.',
         unsavedChangesWarning: 'You have unsaved changes. Are you sure you want to leave? Your changes will be lost.',
+        imageResolutionWarning: 'For best results, upload high-resolution images (e.g., at least 1200px wide).',
     }
   },
   vn: {
@@ -221,6 +237,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         sectionTitle: 'Portfolio',
         title: 'Dự án nổi bật',
         addProject: 'Thêm dự án',
+        viewProjectLink: 'Xem Liên kết',
     },
     projectsData: [
       {
@@ -235,8 +252,9 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
           'Thiết kế quy trình phê duyệt động và ma trận bảo mật.'
         ],
         technologies: ['Jira', 'Figma', 'Tích hợp SAP', 'API Chữ ký số'],
-        coverImage: 'https://picsum.photos/seed/cms1/1200/800',
+        coverImage: 'https://images.unsplash.com/photo-1556740714-a8395b3bf30f?q=80&w=1200&auto=format&fit=crop',
         detailImages: ['https://picsum.photos/seed/cms2/1200/800', 'https://picsum.photos/seed/cms3/1200/800'],
+        url: 'https://www.figma.com/proto/your-prototype-link-here',
       },
       {
         id: 2,
@@ -251,6 +269,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         technologies: ['Figma', 'Jira', 'Tích hợp SAP', 'Hệ thống mã QR'],
         coverImage: 'https://picsum.photos/seed/rms1/1200/800',
         detailImages: ['https://picsum.photos/seed/rms2/1200/800'],
+        url: '',
       },
       {
         id: 3,
@@ -264,6 +283,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         technologies: ['Figma', 'Jira', 'Kiến trúc đám mây'],
         coverImage: 'https://picsum.photos/seed/inventory1/1200/800',
         detailImages: ['https://picsum.photos/seed/inventory2/1200/800'],
+        url: 'https://github.com/your-repo-link-here',
       },
         {
         id: 4,
@@ -277,6 +297,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         technologies: ['Hệ thống mã QR', 'Figma', 'Kiểm soát truy cập'],
         coverImage: 'https://picsum.photos/seed/visitor1/1200/800',
         detailImages: [],
+        url: '',
       },
     ],
     experience: {
@@ -318,17 +339,22 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         addProjectTitle: 'Thêm dự án mới',
         editProjectTitle: 'Chỉnh sửa dự án',
         saveProject: 'Lưu dự án',
+        projectUrlLabel: 'URL Dự án (VD: prototype, repo)',
+        visitProjectLink: 'Xem Liên kết Dự án',
         addExperienceTitle: 'Thêm kinh nghiệm mới',
         editExperienceTitle: 'Chỉnh sửa kinh nghiệm',
         saveExperience: 'Lưu kinh nghiệm',
         addSkillCategoryTitle: 'Thêm danh mục kỹ năng mới',
         editSkillCategoryTitle: 'Chỉnh sửa danh mục kỹ năng',
         saveSkillCategory: 'Lưu danh mục',
+        editContactTitle: 'Chỉnh sửa mục Liên hệ',
+        saveContact: 'Lưu Liên hệ',
         deleteProjectConfirmation: 'Bạn có chắc chắn muốn xóa dự án này không? Hành động này không thể hoàn tác.',
         deleteExperienceConfirmation: 'Bạn có chắc chắn muốn xóa mục kinh nghiệm này không? Hành động này không thể hoàn tác.',
         deleteSkillCategoryConfirmation: 'Bạn có chắc chắn muốn xóa danh mục kỹ năng này không? Hành động này không thể hoàn tác.',
         localStorageError: 'Không thể lưu các thay đổi. Bạn có thể đã hết dung lượng lưu trữ cục bộ, điều này có thể xảy ra nếu bạn tải lên quá nhiều hình ảnh lớn. Vui lòng thử giảm kích thước hoặc số lượng hình ảnh.',
         unsavedChangesWarning: 'Bạn có những thay đổi chưa lưu. Bạn có chắc chắn muốn rời đi không? Các thay đổi sẽ bị mất.',
+        imageResolutionWarning: 'Để có chất lượng tốt nhất, hãy tải lên hình ảnh có độ phân giải cao (ví dụ: chiều rộng ít nhất 1200px).',
     }
   }
 };

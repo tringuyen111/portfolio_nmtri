@@ -7,6 +7,7 @@ export interface Project {
   technologies: string[];
   coverImage: string;
   detailImages: string[];
+  url?: string;
 }
 
 export interface Experience {

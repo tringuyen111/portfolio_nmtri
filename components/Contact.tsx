@@ -1,12 +1,14 @@
 
 import React from 'react';
 import type { ContactMethod } from '../types';
-import { LinkedInIcon, EmailIcon, PhoneIcon } from './icons';
+import { LinkedInIcon, EmailIcon, PhoneIcon, PencilIcon } from './icons';
 
 interface ContactProps {
     title: string;
     subtitle: string;
     contactMethods: ContactMethod[];
+    isAdmin: boolean;
+    onEdit: () => void;
 }
 
 const iconMap: { [key in ContactMethod['type']]: React.FC<{className?: string}> } = {
@@ -15,9 +17,14 @@ const iconMap: { [key in ContactMethod['type']]: React.FC<{className?: string}> 
     phone: (props) => <PhoneIcon {...props} className="w-6 h-6 text-blue-500" />,
 };
 
-const Contact: React.FC<ContactProps> = ({ title, subtitle, contactMethods }) => {
+const Contact: React.FC<ContactProps> = ({ title, subtitle, contactMethods, isAdmin, onEdit }) => {
   return (
-    <section id="contact" className="py-20 bg-white">
+    <section id="contact" className="py-20 bg-white relative">
+      {isAdmin && (
+        <button onClick={onEdit} className="absolute top-4 right-4 bg-brand-green text-white p-2 rounded-full hover:opacity-80 transition-opacity">
+            <PencilIcon />
+        </button>
+      )}
       <div className="container mx-auto px-6 text-center">
         <h2 className="text-4xl md:text-5xl font-serif text-brand-text mb-4">{title}</h2>
         <p className="max-w-2xl mx-auto text-brand-text-secondary mb-8">

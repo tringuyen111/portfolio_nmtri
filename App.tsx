@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import type { Project, Experience, SkillCategory, HeroData } from './types';
 import { allLanguageData } from './i18n';
@@ -12,7 +13,7 @@ import ExperienceComponent from './components/Experience';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ProjectModal from './components/ProjectModal';
-import { AdminLoginModal, HeroEditModal, ProjectEditModal, ExperienceEditModal, SkillCategoryEditModal } from './components/AdminModals';
+import { AdminLoginModal, HeroEditModal, ProjectEditModal, ExperienceEditModal, SkillCategoryEditModal, ContactEditModal } from './components/AdminModals';
 
 // --- LocalStorage Persistence ---
 
@@ -54,10 +55,11 @@ const deepEqual = (obj1: any, obj2: any): boolean => {
 // --- End LocalStorage ---
 
 type EditingItem = 
-    | { type: 'hero'; data: HeroData }
+    | { type: 'hero'; data: { en: HeroData, vn: HeroData } }
     | { type: 'project'; data: { en: Project, vn: Project } | 'new' }
     | { type: 'experience'; data: { en: Experience, vn: Experience } | 'new' }
-    | { type: 'skill'; data: { en: SkillCategory, vn: SkillCategory } | 'new' };
+    | { type: 'skill'; data: { en: SkillCategory, vn: SkillCategory } | 'new' }
+    | { type: 'contact'; data: { en: LanguageContent['contact'], vn: LanguageContent['contact'] } };
 
 type Language = 'en' | 'vn';
 
@@ -133,19 +135,18 @@ const App: React.FC = () => {
   const activeContent = isAdmin && draftContent ? draftContent : content;
   const currentLangContent = activeContent[language];
 
-  const handleSaveHero = (data: HeroData) => {
+  const handleSaveHero = (data: { en: HeroData, vn: HeroData }) => {
     setDraftContent(prev => {
         if (!prev) return null;
+        const sharedImageUrl = data.en.imageUrl;
         return {
             ...prev,
-            [language]: {
-                ...prev[language],
-                hero: data,
-            }
+            en: { ...prev.en, hero: { ...data.en, imageUrl: sharedImageUrl } },
+            vn: { ...prev.vn, hero: { ...data.vn, imageUrl: sharedImageUrl } },
         };
     });
     setEditingItem(null);
-  }
+  };
   
   const handleEditProject = (projectToEdit: Project) => {
       if (!draftContent) return;
@@ -178,6 +179,7 @@ const App: React.FC = () => {
             // Sync shared fields
             newVnProject.coverImage = newEnProject.coverImage;
             newVnProject.detailImages = newEnProject.detailImages;
+            newVnProject.url = newEnProject.url;
             return {
                 ...prev,
                 en: { ...prev.en, projectsData: [...prev.en.projectsData, newEnProject] },
@@ -232,8 +234,8 @@ const App: React.FC = () => {
             const newVnExp: Experience = { ...(data.vn as Omit<Experience, 'id'>), id: newId };
             return {
                 ...prev,
-                en: { ...prev.en, experiencesData: [...prev.en.experiencesData, newEnExp] },
-                vn: { ...prev.vn, experiencesData: [...prev.vn.experiencesData, newVnExp] },
+                en: { ...prev.en, experiencesData: [newEnExp, ...prev.en.experiencesData] },
+                vn: { ...prev.vn, experiencesData: [newVnExp, ...prev.vn.experiencesData] },
             };
         }
     });
@@ -305,6 +307,18 @@ const App: React.FC = () => {
       });
     }
   };
+
+  const handleSaveContact = (data: { en: LanguageContent['contact'], vn: LanguageContent['contact'] }) => {
+    setDraftContent(prev => {
+        if (!prev) return null;
+        return {
+            ...prev,
+            en: { ...prev.en, contact: data.en },
+            vn: { ...prev.vn, contact: data.vn },
+        };
+    });
+    setEditingItem(null);
+  };
   
   const handleCloseModal = () => {
       setEditingItem(null);
@@ -331,12 +345,13 @@ const App: React.FC = () => {
             paragraphs={currentLangContent.hero.paragraphs}
             imageUrl={currentLangContent.hero.imageUrl}
             isAdmin={isAdmin}
-            onEdit={() => setEditingItem({ type: 'hero', data: currentLangContent.hero })}
+            onEdit={() => setEditingItem({ type: 'hero', data: { en: activeContent.en.hero, vn: activeContent.vn.hero } })}
         />
         <Projects 
             sectionTitle={currentLangContent.projects.sectionTitle}
             title={currentLangContent.projects.title}
             addProjectText={currentLangContent.projects.addProject}
+            viewProjectLinkText={currentLangContent.projects.viewProjectLink}
             projects={currentLangContent.projectsData} 
             onViewProject={setSelectedProject} 
             isAdmin={isAdmin}
@@ -370,6 +385,8 @@ const App: React.FC = () => {
             title={currentLangContent.contact.title}
             subtitle={currentLangContent.contact.subtitle}
             contactMethods={currentLangContent.contact.contactMethods}
+            isAdmin={isAdmin}
+            onEdit={() => setEditingItem({ type: 'contact', data: { en: activeContent.en.contact, vn: activeContent.vn.contact } })}
         />
       </main>
       <Footer 
@@ -377,7 +394,11 @@ const App: React.FC = () => {
       />
 
       {/* View Modals */}
-      <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+      <ProjectModal 
+        project={selectedProject} 
+        onClose={() => setSelectedProject(null)} 
+        visitProjectLinkText={currentLangContent.modals.visitProjectLink}
+      />
       
       {/* Admin and Edit Modals */}
       <AdminLoginModal 
@@ -388,9 +409,10 @@ const App: React.FC = () => {
         loginButtonText={currentLangContent.modals.loginButton}
       />
       {editingItem?.type === 'hero' && <HeroEditModal heroData={editingItem.data} onSave={handleSaveHero} onClose={handleCloseModal} title={currentLangContent.modals.editHeroTitle} saveButtonText={currentLangContent.modals.saveChanges} />}
-      {editingItem?.type === 'project' && <ProjectEditModal project={editingItem.data} onSave={handleSaveProject} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addProjectTitle : currentLangContent.modals.editProjectTitle} saveButtonText={currentLangContent.modals.saveProject} />}
+      {editingItem?.type === 'project' && <ProjectEditModal project={editingItem.data} onSave={handleSaveProject} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addProjectTitle : currentLangContent.modals.editProjectTitle} saveButtonText={currentLangContent.modals.saveProject} urlLabelText={currentLangContent.modals.projectUrlLabel} imageResolutionWarningText={currentLangContent.modals.imageResolutionWarning} />}
       {editingItem?.type === 'experience' && <ExperienceEditModal experience={editingItem.data} onSave={handleSaveExperience} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addExperienceTitle : currentLangContent.modals.editExperienceTitle} saveButtonText={currentLangContent.modals.saveExperience} />}
       {editingItem?.type === 'skill' && <SkillCategoryEditModal skillCategory={editingItem.data} onSave={handleSaveSkillCategory} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addSkillCategoryTitle : currentLangContent.modals.editSkillCategoryTitle} saveButtonText={currentLangContent.modals.saveSkillCategory} />}
+      {editingItem?.type === 'contact' && <ContactEditModal contactData={editingItem.data} onSave={handleSaveContact} onClose={handleCloseModal} title={currentLangContent.modals.editContactTitle} saveButtonText={currentLangContent.modals.saveContact} />}
 
     </div>
   );
