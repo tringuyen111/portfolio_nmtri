@@ -61,3 +61,11 @@ export const PhoneIcon: React.FC<{ className?: string }> = ({ className = "w-6 h
         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
     </svg>
 );
+
+export const FontIcon: React.FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m-4.5-15h9M5.25 19.5h13.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l-3 15" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 4.5l3 15" />
+    </svg>
+);

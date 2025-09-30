@@ -16,6 +16,7 @@ export interface Experience {
   company: string;
   period: string;
   description: string;
+  url?: string;
 }
 
 export interface SkillCategory {
@@ -42,4 +43,17 @@ export interface ContactMethod {
   type: ContactMethodType;
   label: string;
   url: string;
+}
+
+export interface AppSettings {
+  fontFamilySans: string;
+  fontFamilySerif: string;
+  baseFontSize: number;
+}
+
+import type { LanguageContent } from './i18n';
+export interface AppContent {
+  en: LanguageContent;
+  vn: LanguageContent;
+  settings: AppSettings;
 }

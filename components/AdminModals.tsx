@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { CloseIcon, TrashIcon, PlusIcon } from './icons';
 import type { Project, Experience, SkillCategory, HeroData, ContactMethod } from '../types';
@@ -54,25 +55,25 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
     <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-white rounded-lg p-8 w-full max-w-sm relative" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-500"><CloseIcon /></button>
-        <h2 className="text-2xl font-bold mb-4 text-center">{title}</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">{title}</h2>
         <form onSubmit={handleLogin}>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder={usernamePlaceholder}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4"
-            autoFocus
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={passwordPlaceholder}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4"
-          />
-          {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
-          <button type="submit" className="w-full bg-brand-green text-white py-2 rounded-md">
+          <div className="space-y-4">
+            <TextInput
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder={usernamePlaceholder}
+              autoFocus
+            />
+            <TextInput
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={passwordPlaceholder}
+            />
+          </div>
+          {error && <p className="text-red-500 text-sm text-center mt-4">{error}</p>}
+          <button type="submit" className="w-full bg-brand-green text-white py-2 rounded-md mt-6">
             {loginButtonText}
           </button>
         </form>
@@ -122,10 +123,10 @@ const FormField: React.FC<{ label: string, children: React.ReactNode, instructio
     </div>
 );
 const TextInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props) => (
-    <input {...props} className="w-full border border-gray-300 rounded-md px-3 py-2" />
+    <input {...props} className="w-full border border-gray-300 rounded-md px-3 py-2 placeholder:text-gray-500" />
 );
 const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (props) => (
-    <textarea {...props} rows={4} className="w-full border border-gray-300 rounded-md px-3 py-2" />
+    <textarea {...props} rows={4} className="w-full border border-gray-300 rounded-md px-3 py-2 placeholder:text-gray-500" />
 );
 
 const LanguageTabs: React.FC<{ activeLang: 'en' | 'vn', onSelect: (lang: 'en' | 'vn') => void }> = ({ activeLang, onSelect }) => {
@@ -275,10 +276,6 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onS
         if (e.target.files) {
             const files = Array.from(e.target.files);
             const currentImages = formData.en.detailImages || [];
-            if (currentImages.length + files.length > 15) {
-                alert('You can have a maximum of 15 detail images in total.');
-                return;
-            }
             try {
                 const base64Promises = files.map(fileToBase64);
                 const newBase64Images = await Promise.all(base64Promises);
@@ -335,7 +332,7 @@ export const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ project, onS
                     {formData.en.coverImage && <img src={formData.en.coverImage} alt="Cover preview" className="mt-2 rounded-lg w-48 object-cover" />}
                 </FormField>
                 
-                <FormField label={`Detail Images (Shared) (${formData.en.detailImages.length} / 15)`}>
+                <FormField label={`Detail Images (Shared) (${formData.en.detailImages.length})`}>
                     <input type="file" multiple accept="image/*" onChange={handleDetailImagesUpload} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-green-light file:text-brand-green hover:file:bg-brand-green-light/80 mb-2" />
                     <p className="text-xs text-gray-500 mt-1">{imageResolutionWarningText}</p>
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -361,37 +358,146 @@ interface ExperienceEditModalProps {
     onClose: () => void;
     title: string;
     saveButtonText: string;
+    labels: {
+      url: string;
+      periodSettings: string;
+      startDate: string;
+      endDate: string;
+      currentRole: string;
+      periodPreview: string;
+    }
 }
-const emptyBilingualExperience = {
-    en: { role: '', company: '', period: '', description: '' },
-    vn: { role: '', company: '', period: '', description: '' },
+const emptyBilingualExperience: { en: Omit<Experience, 'id'>, vn: Omit<Experience, 'id'> } = {
+    en: { role: '', company: '', period: '', description: '', url: '' },
+    vn: { role: '', company: '', period: '', description: '', url: '' },
 };
-export const ExperienceEditModal: React.FC<ExperienceEditModalProps> = ({ experience, onSave, onClose, title, saveButtonText }) => {
+export const ExperienceEditModal: React.FC<ExperienceEditModalProps> = ({ experience, onSave, onClose, title, saveButtonText, labels }) => {
     const [formData, setFormData] = useState(experience === 'new' ? emptyBilingualExperience : experience);
     const [activeLang, setActiveLang] = useState<'en' | 'vn'>('en');
+    
+    // State for date picker
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [isCurrent, setIsCurrent] = useState(false);
 
     const currentLangData = formData[activeLang];
 
-    const handleChange = (field: keyof Omit<Experience, 'id'>, value: string) => {
+    // Parse period string on modal open
+    useEffect(() => {
+        if (experience !== 'new' && experience.en.period) {
+            const periodEn = experience.en.period;
+            const periodVn = experience.vn.period;
+            const [startStr, endStr] = periodEn.split(' - ');
+            const endStrVn = periodVn.split(' - ')[1];
+
+            const parseDate = (str: string) => {
+                if (!str) return '';
+                try {
+                    const date = new Date(str);
+                    if (isNaN(date.getTime())) return '';
+                    const year = date.getFullYear();
+                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    return `${year}-${month}`;
+                } catch { return ''; }
+            };
+
+            setStartDate(parseDate(startStr));
+
+            if (endStr?.toLowerCase() === 'present' || endStrVn === 'Hiện tại') {
+                setIsCurrent(true);
+                setEndDate('');
+            } else {
+                setIsCurrent(false);
+                setEndDate(parseDate(endStr));
+            }
+        }
+    }, [experience]);
+
+    // Reconstruct period string when date pickers change
+    useEffect(() => {
+        const formatDate = (dateStr: string, locale: string) => {
+            if (!dateStr) return '';
+            const [year, month] = dateStr.split('-');
+            const date = new Date(parseInt(year, 10), parseInt(month, 10) - 1);
+            return date.toLocaleString(locale, { month: 'short', year: 'numeric' });
+        };
+
+        const startEn = formatDate(startDate, 'en-US');
+        const startVn = formatDate(startDate, 'vi-VN');
+
+        if (!startEn) {
+            handleSharedChange('period', '');
+            return;
+        }
+
+        const endEn = isCurrent ? 'Present' : formatDate(endDate, 'en-US');
+        const endVn = isCurrent ? 'Hiện tại' : formatDate(endDate, 'vi-VN');
+
+        const periodEn = endEn ? `${startEn} - ${endEn}` : startEn;
+        const periodVn = endVn ? `${startVn} - ${endVn}` : startVn;
+
+        setFormData(prev => ({
+            ...prev,
+            en: { ...prev.en, period: periodEn },
+            vn: { ...prev.vn, period: periodVn },
+        }));
+
+    }, [startDate, endDate, isCurrent]);
+
+    const handleTextChange = (field: keyof Omit<Experience, 'id' | 'period' | 'url'>, value: string) => {
       setFormData(prev => ({
         ...prev,
         [activeLang]: { ...prev[activeLang], [field]: value }
       }));
+    };
+    
+    const handleSharedChange = (field: 'url' | 'period', value: string) => {
+        setFormData(prev => ({
+            en: { ...prev.en, [field]: value },
+            vn: { ...prev.vn, [field]: value },
+        }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSave(formData);
     };
+    
     return (
         <EditModalBase title={title} onClose={onClose}>
             <form onSubmit={handleSubmit}>
                 <LanguageTabs activeLang={activeLang} onSelect={setActiveLang} />
-                <FormField label="Role"><TextInput value={currentLangData.role} onChange={e => handleChange('role', e.target.value)} /></FormField>
-                <FormField label="Company"><TextInput value={currentLangData.company} onChange={e => handleChange('company', e.target.value)} /></FormField>
-                <FormField label="Period"><TextInput value={currentLangData.period} onChange={e => handleChange('period', e.target.value)} /></FormField>
-                <FormField label="Description"><TextArea value={currentLangData.description} onChange={e => handleChange('description', e.target.value)} /></FormField>
-                <button type="submit" className="w-full bg-brand-green text-white py-2 rounded-md mt-4">{saveButtonText}</button>
+                <FormField label="Role"><TextInput value={currentLangData.role} onChange={e => handleTextChange('role', e.target.value)} /></FormField>
+                <FormField label="Company"><TextInput value={currentLangData.company} onChange={e => handleTextChange('company', e.target.value)} /></FormField>
+                <FormField label="Description"><TextArea value={currentLangData.description} onChange={e => handleTextChange('description', e.target.value)} /></FormField>
+                <FormField label={labels.url}>
+                    <TextInput placeholder="https://company.com" value={formData.en.url || ''} onChange={e => handleSharedChange('url', e.target.value)} />
+                </FormField>
+                
+                <hr className="my-6"/>
+
+                <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                    <h3 className="text-md font-medium text-gray-800 mb-4">{labels.periodSettings}</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField label={labels.startDate}>
+                            <input type="month" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full border border-gray-300 rounded-md px-3 py-2" />
+                        </FormField>
+                        <FormField label={labels.endDate}>
+                            <input type="month" value={endDate} onChange={e => setEndDate(e.target.value)} disabled={isCurrent} className="w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-100" />
+                        </FormField>
+                    </div>
+                    <div className="mt-4">
+                        <label className="flex items-center">
+                            <input type="checkbox" checked={isCurrent} onChange={e => setIsCurrent(e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-brand-green focus:ring-brand-green"/>
+                            <span className="ml-2 text-sm text-gray-700">{labels.currentRole}</span>
+                        </label>
+                    </div>
+                    <div className="mt-4">
+                      <p className="text-sm text-gray-500">{labels.periodPreview}: <span className="font-semibold text-gray-800">{currentLangData.period}</span></p>
+                    </div>
+                </div>
+
+                <button type="submit" className="w-full bg-brand-green text-white py-2 rounded-md mt-6">{saveButtonText}</button>
             </form>
         </EditModalBase>
     );

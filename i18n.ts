@@ -1,4 +1,5 @@
-import type { Project, Experience, SkillCategory, HeroData, NavLink, ContactMethod } from './types';
+
+import type { Project, Experience, SkillCategory, HeroData, NavLink, ContactMethod, AppContent } from './types';
 
 export interface LanguageContent {
   navLinks: NavLink[];
@@ -54,6 +55,12 @@ export interface LanguageContent {
       addExperienceTitle: string;
       editExperienceTitle: string;
       saveExperience: string;
+      experienceUrlLabel: string;
+      periodSettingsLabel: string;
+      startDateLabel: string;
+      endDateLabel: string;
+      currentRoleCheckbox: string;
+      periodPreviewLabel: string;
       addSkillCategoryTitle: string;
       editSkillCategoryTitle: string;
       saveSkillCategory: string;
@@ -65,10 +72,20 @@ export interface LanguageContent {
       localStorageError: string;
       unsavedChangesWarning: string;
       imageResolutionWarning: string;
+      themeEditorTitle: string;
+      fontSettings: string;
+      sansSerifFont: string;
+      serifFont: string;
+      baseFontSize: string;
   }
 }
 
-export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
+export const initialContent: AppContent = {
+  settings: {
+    fontFamilySans: 'Inter',
+    fontFamilySerif: 'Playfair Display',
+    baseFontSize: 16,
+  },
   en: {
     navLinks: [
         { text: 'Projects', href: '#projects' },
@@ -91,7 +108,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         '<b>I connect business needs with technology</b> by <b>listening</b>, <b>clarifying</b>, and <b>structuring requirements</b>, modeling processes, and turning them into <b>implementable documentation</b>.',
         'My focus is on <b>clarity</b>, <b>consistency</b>, and <b>scalability</b> — from the initial idea to a stable solution — ensuring that both business and technical teams <b>speak the same language</b>.'
       ],
-      imageUrl: 'https://picsum.photos/seed/hero/1600/900',
+      imageUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     },
     projects: {
         sectionTitle: 'Portfolio',
@@ -167,9 +184,9 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         addExperience: 'Add Experience',
     },
     experiencesData: [
-      { id: 1, role: 'Business Analyst', company: 'Delfi Technologies', period: 'Aug 2025 - Present', description: 'Analyzing business needs and developing technology solutions to drive efficiency and innovation.' },
-      { id: 2, role: 'Business Analyst', company: 'L.C.S CO., LTD', period: 'Mar 2024 - Aug 2025', description: 'Led BA activities for RMS, TMS, and E-Contract projects. Responsible for requirement analysis, creating Blueprint/BRD/URD, and designing mockups in Figma.' },
-      { id: 3, role: 'Bachelor of Management Information Systems', company: 'Ho Chi Minh City University of Technology', period: '2018 - 2022', description: 'Graduated with a GPA of 3.3/4.0, gaining a strong foundation in analyzing and designing information systems to solve business problems.' },
+      { id: 1, role: 'Business Analyst', company: 'Delfi Technologies', period: 'Aug 2025 - Present', description: 'Analyzing business needs and developing technology solutions to drive efficiency and innovation.', url: 'https://delfi.com/' },
+      { id: 2, role: 'Business Analyst', company: 'L.C.S CO., LTD', period: 'Mar 2024 - Aug 2025', description: 'Led BA activities for RMS, TMS, and E-Contract projects. Responsible for requirement analysis, creating Blueprint/BRD/URD, and designing mockups in Figma.', url: 'https://lcs.com.vn/' },
+      { id: 3, role: 'Bachelor of Management Information Systems', company: 'Ho Chi Minh City University of Technology', period: 'Sep 2018 - May 2022', description: 'Graduated with a GPA of 3.3/4.0, gaining a strong foundation in analyzing and designing information systems to solve business problems.', url: 'https://hcmut.edu.vn/' },
     ],
     skills: {
         sectionTitle: 'My Expertise',
@@ -209,6 +226,12 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         addExperienceTitle: 'Add New Experience',
         editExperienceTitle: 'Edit Experience',
         saveExperience: 'Save Experience',
+        experienceUrlLabel: 'Company/School URL',
+        periodSettingsLabel: 'Period Settings',
+        startDateLabel: 'Start Date',
+        endDateLabel: 'End Date',
+        currentRoleCheckbox: 'I currently work here',
+        periodPreviewLabel: 'Period Preview',
         addSkillCategoryTitle: 'Add New Skill Category',
         editSkillCategoryTitle: 'Edit Skill Category',
         saveSkillCategory: 'Save Skill Category',
@@ -217,9 +240,14 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         deleteProjectConfirmation: 'Are you sure you want to delete this project? This action cannot be undone.',
         deleteExperienceConfirmation: 'Are you sure you want to delete this experience entry? This action cannot be undone.',
         deleteSkillCategoryConfirmation: 'Are you sure you want to delete this skill category? This action cannot be undone.',
-        localStorageError: 'Could not save changes. You may have run out of local storage space, which can happen if you upload too many large images. Please try reducing the size or number of images.',
+        localStorageError: 'Could not save changes. Data may be too large to be stored locally.',
         unsavedChangesWarning: 'You have unsaved changes. Are you sure you want to leave? Your changes will be lost.',
         imageResolutionWarning: 'For best results, upload high-resolution images (e.g., at least 1200px wide).',
+        themeEditorTitle: 'Theme Editor',
+        fontSettings: 'Font Settings',
+        sansSerifFont: 'Body Font (Sans-serif)',
+        serifFont: 'Heading Font (Serif)',
+        baseFontSize: 'Base Font Size',
     }
   },
   vn: {
@@ -244,7 +272,7 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
           '<b>Tôi kết nối nhu cầu kinh doanh với công nghệ</b> bằng cách <b>lắng nghe</b>, <b>làm rõ</b>, và <b>cấu trúc các yêu cầu</b>, mô hình hóa quy trình, và biến chúng thành <b>tài liệu có thể triển khai</b>.',
           'Trọng tâm của tôi là <b>sự rõ ràng</b>, <b>tính nhất quán</b>, và <b>khả năng mở rộng</b> — từ ý tưởng ban đầu đến một giải pháp ổn định — đảm bảo rằng cả đội ngũ kinh doanh và kỹ thuật đều <b>nói cùng một ngôn ngữ</b>.'
       ],
-      imageUrl: 'https://picsum.photos/seed/hero/1600/900',
+      imageUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     },
     projects: {
         sectionTitle: 'Portfolio',
@@ -320,9 +348,9 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         addExperience: 'Thêm kinh nghiệm',
     },
     experiencesData: [
-      { id: 1, role: 'Chuyên viên Phân tích nghiệp vụ', company: 'Delfi Technologies', period: 'Tháng 8 2025 - Hiện tại', description: 'Phân tích nhu cầu kinh doanh và phát triển các giải pháp công nghệ để thúc đẩy hiệu quả và đổi mới.' },
-      { id: 2, role: 'Chuyên viên Phân tích nghiệp vụ', company: 'L.C.S CO., LTD', period: 'Tháng 3 2024 - Tháng 8 2025', description: 'Dẫn dắt các hoạt động BA cho các dự án RMS, TMS và E-Contract. Chịu trách nhiệm phân tích yêu cầu, tạo Blueprint/BRD/URD và thiết kế mockup trên Figma.' },
-      { id: 3, role: 'Cử nhân Hệ thống thông tin quản lý', company: 'Đại học Bách Khoa TP.HCM', period: '2018 - 2022', description: 'Tốt nghiệp với GPA 3.3/4.0, có nền tảng vững chắc về phân tích và thiết kế hệ thống thông tin để giải quyết các vấn đề kinh doanh.' },
+      { id: 1, role: 'Chuyên viên Phân tích nghiệp vụ', company: 'Delfi Technologies', period: 'Tháng 8 2025 - Hiện tại', description: 'Phân tích nhu cầu kinh doanh và phát triển các giải pháp công nghệ để thúc đẩy hiệu quả và đổi mới.', url: 'https://delfi.com/' },
+      { id: 2, role: 'Chuyên viên Phân tích nghiệp vụ', company: 'L.C.S CO., LTD', period: 'Tháng 3 2024 - Tháng 8 2025', description: 'Dẫn dắt các hoạt động BA cho các dự án RMS, TMS và E-Contract. Chịu trách nhiệm phân tích yêu cầu, tạo Blueprint/BRD/URD và thiết kế mockup trên Figma.', url: 'https://lcs.com.vn/' },
+      { id: 3, role: 'Cử nhân Hệ thống thông tin quản lý', company: 'Đại học Bách Khoa TP.HCM', period: 'Tháng 9 2018 - Tháng 5 2022', description: 'Tốt nghiệp với GPA 3.3/4.0, có nền tảng vững chắc về phân tích và thiết kế hệ thống thông tin để giải quyết các vấn đề kinh doanh.', url: 'https://hcmut.edu.vn/' },
     ],
     skills: {
         sectionTitle: 'Chuyên môn',
@@ -362,6 +390,12 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         addExperienceTitle: 'Thêm kinh nghiệm mới',
         editExperienceTitle: 'Chỉnh sửa kinh nghiệm',
         saveExperience: 'Lưu kinh nghiệm',
+        experienceUrlLabel: 'URL Công ty/Trường học',
+        periodSettingsLabel: 'Cài đặt Thời gian',
+        startDateLabel: 'Ngày bắt đầu',
+        endDateLabel: 'Ngày kết thúc',
+        currentRoleCheckbox: 'Tôi đang làm việc ở đây',
+        periodPreviewLabel: 'Xem trước Thời gian',
         addSkillCategoryTitle: 'Thêm danh mục kỹ năng mới',
         editSkillCategoryTitle: 'Chỉnh sửa danh mục kỹ năng',
         saveSkillCategory: 'Lưu danh mục',
@@ -370,9 +404,14 @@ export const allLanguageData: { en: LanguageContent; vn: LanguageContent } = {
         deleteProjectConfirmation: 'Bạn có chắc chắn muốn xóa dự án này không? Hành động này không thể hoàn tác.',
         deleteExperienceConfirmation: 'Bạn có chắc chắn muốn xóa mục kinh nghiệm này không? Hành động này không thể hoàn tác.',
         deleteSkillCategoryConfirmation: 'Bạn có chắc chắn muốn xóa danh mục kỹ năng này không? Hành động này không thể hoàn tác.',
-        localStorageError: 'Không thể lưu các thay đổi. Bạn có thể đã hết dung lượng lưu trữ cục bộ, điều này có thể xảy ra nếu bạn tải lên quá nhiều hình ảnh lớn. Vui lòng thử giảm kích thước hoặc số lượng hình ảnh.',
+        localStorageError: 'Không thể lưu các thay đổi. Dữ liệu có thể quá lớn để lưu trữ cục bộ.',
         unsavedChangesWarning: 'Bạn có những thay đổi chưa lưu. Bạn có chắc chắn muốn rời đi không? Các thay đổi sẽ bị mất.',
         imageResolutionWarning: 'Để có chất lượng tốt nhất, hãy tải lên hình ảnh có độ phân giải cao (ví dụ: chiều rộng ít nhất 1200px).',
+        themeEditorTitle: 'Trình chỉnh sửa Giao diện',
+        fontSettings: 'Cài đặt Phông chữ',
+        sansSerifFont: 'Phông chữ Nội dung (Sans-serif)',
+        serifFont: 'Phông chữ Tiêu đề (Serif)',
+        baseFontSize: 'Cỡ chữ Cơ bản',
     }
   }
 };

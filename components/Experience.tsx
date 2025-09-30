@@ -52,7 +52,13 @@ const ExperienceComponent: React.FC<ExperienceProps> = ({ sectionTitle, title, s
                           </div>
                       )}
                       <h3 className="text-lg font-bold text-brand-text">{exp.role}</h3>
-                      <p className="text-brand-green font-semibold">{exp.company}</p>
+                      {exp.url ? (
+                        <a href={exp.url} target="_blank" rel="noopener noreferrer" className="text-brand-green font-semibold hover:underline">
+                            {exp.company}
+                        </a>
+                      ) : (
+                        <p className="text-brand-green font-semibold">{exp.company}</p>
+                      )}
                       <p className="text-sm text-brand-text-secondary mb-2">{exp.period}</p>
                       <p className="text-sm text-brand-text-secondary">{exp.description}</p>
                   </div>

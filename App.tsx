@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import type { Project, Experience, SkillCategory, HeroData } from './types';
-import { allLanguageData } from './i18n';
+import type { Project, Experience, SkillCategory, HeroData, AppContent, AppSettings } from './types';
+import { initialContent } from './i18n';
 import type { LanguageContent } from './i18n';
 
 import Header from './components/Header';
@@ -11,11 +12,12 @@ import ExperienceComponent from './components/Experience';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ProjectModal from './components/ProjectModal';
+import ThemeEditor from './components/ThemeEditor';
 import { AdminLoginModal, HeroEditModal, ProjectEditModal, ExperienceEditModal, SkillCategoryEditModal, ContactEditModal } from './components/AdminModals';
 
 // --- LocalStorage Persistence ---
 
-const LS_KEY_CONTENT = 'portfolio-content-v2';
+const LS_KEY_CONTENT = 'portfolio-content-v3'; // Incremented version for new data structure
 
 const getFromStorage = <T,>(key: string, fallback: T): T => {
     try {
@@ -63,10 +65,8 @@ type EditingItem =
 
 type Language = 'en' | 'vn';
 
-type AppContent = Bilingual<LanguageContent>;
-
 const App: React.FC = () => {
-  const [content, setContent] = useState<AppContent>(() => getFromStorage(LS_KEY_CONTENT, allLanguageData));
+  const [content, setContent] = useState<AppContent>(() => getFromStorage(LS_KEY_CONTENT, initialContent));
   const [draftContent, setDraftContent] = useState<AppContent | null>(null);
   const [language, setLanguage] = useState<Language>('en');
   
@@ -76,6 +76,8 @@ const App: React.FC = () => {
   const [editingItem, setEditingItem] = useState<EditingItem | null>(null);
 
   const isEditing = draftContent !== null;
+  const activeContent = isEditing && draftContent ? draftContent : content;
+  const currentLangContent = activeContent[language];
 
   // --- State Persistence Effect ---
   useEffect(() => {
@@ -85,7 +87,7 @@ const App: React.FC = () => {
               localStorage.setItem(LS_KEY_CONTENT, JSON.stringify(content));
           } catch (error) {
               console.error("Failed to save content to localStorage:", error);
-              const alertMessage = allLanguageData[language].modals.localStorageError || "Could not save changes. You may have too many large images. Please reduce image sizes and try again.";
+              const alertMessage = initialContent[language].modals.localStorageError || "Could not save changes. Data may be too large to be stored locally.";
               alert(alertMessage);
           }
       }
@@ -97,7 +99,7 @@ const App: React.FC = () => {
 
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (hasUnsavedChanges) {
-        const message = allLanguageData[language].modals.unsavedChangesWarning;
+        const message = initialContent[language].modals.unsavedChangesWarning;
         event.preventDefault();
         event.returnValue = message;
         return message;
@@ -110,7 +112,16 @@ const App: React.FC = () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [isEditing, draftContent, content, language]);
-  // --- End Effect ---
+
+  // --- Dynamic Style Application Effect ---
+   useEffect(() => {
+        const settings = activeContent.settings;
+        const root = document.documentElement;
+        root.style.setProperty('--font-sans', settings.fontFamilySans);
+        root.style.setProperty('--font-serif', settings.fontFamilySerif);
+        root.style.fontSize = `${settings.baseFontSize}px`;
+    }, [activeContent.settings]);
+
 
   const handleLoginAttempt = (username: string, password: string): boolean => {
       if (username === 'nguyenmanhtri2907@gmail.com' && password === 'nmt29072002') {
@@ -148,8 +159,12 @@ const App: React.FC = () => {
     setEditingItem(null);
   };
 
-  const activeContent = isEditing && draftContent ? draftContent : content;
-  const currentLangContent = activeContent[language];
+  const handleSettingsChange = (newSettings: AppSettings) => {
+    setDraftContent(prev => {
+        if (!prev) return null;
+        return { ...prev, settings: newSettings };
+    });
+  };
 
   const handleSaveHero = (data: Bilingual<HeroData>) => {
     setDraftContent(prev => {
@@ -434,9 +449,22 @@ const App: React.FC = () => {
         forgotPasswordLinkText={currentLangContent.modals.forgotPasswordLink}
         forgotPasswordHelpText={currentLangContent.modals.forgotPasswordHelp}
       />
+      {isEditing && draftContent && (
+        <ThemeEditor 
+            settings={draftContent.settings}
+            onSettingsChange={handleSettingsChange}
+            labels={{
+                title: currentLangContent.modals.themeEditorTitle,
+                fontSettings: currentLangContent.modals.fontSettings,
+                sansSerifFont: currentLangContent.modals.sansSerifFont,
+                serifFont: currentLangContent.modals.serifFont,
+                baseFontSize: currentLangContent.modals.baseFontSize,
+            }}
+        />
+      )}
       {isEditing && editingItem?.type === 'hero' && <HeroEditModal heroData={editingItem.data} onSave={handleSaveHero} onClose={handleCloseModal} title={currentLangContent.modals.editHeroTitle} saveButtonText={currentLangContent.modals.saveChanges} />}
       {isEditing && editingItem?.type === 'project' && <ProjectEditModal project={editingItem.data} onSave={handleSaveProject} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addProjectTitle : currentLangContent.modals.editProjectTitle} saveButtonText={currentLangContent.modals.saveProject} urlLabelText={currentLangContent.modals.projectUrlLabel} imageResolutionWarningText={currentLangContent.modals.imageResolutionWarning} />}
-      {isEditing && editingItem?.type === 'experience' && <ExperienceEditModal experience={editingItem.data} onSave={handleSaveExperience} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addExperienceTitle : currentLangContent.modals.editExperienceTitle} saveButtonText={currentLangContent.modals.saveExperience} />}
+      {isEditing && editingItem?.type === 'experience' && <ExperienceEditModal experience={editingItem.data} onSave={handleSaveExperience} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addExperienceTitle : currentLangContent.modals.editExperienceTitle} saveButtonText={currentLangContent.modals.saveExperience} labels={{url: currentLangContent.modals.experienceUrlLabel, periodSettings: currentLangContent.modals.periodSettingsLabel, startDate: currentLangContent.modals.startDateLabel, endDate: currentLangContent.modals.endDateLabel, currentRole: currentLangContent.modals.currentRoleCheckbox, periodPreview: currentLangContent.modals.periodPreviewLabel}} />}
       {isEditing && editingItem?.type === 'skill' && <SkillCategoryEditModal skillCategory={editingItem.data} onSave={handleSaveSkillCategory} onClose={handleCloseModal} title={editingItem.data === 'new' ? currentLangContent.modals.addSkillCategoryTitle : currentLangContent.modals.editSkillCategoryTitle} saveButtonText={currentLangContent.modals.saveSkillCategory} />}
       {isEditing && editingItem?.type === 'contact' && <ContactEditModal contactData={editingItem.data} onSave={handleSaveContact} onClose={handleCloseModal} title={currentLangContent.modals.editContactTitle} saveButtonText={currentLangContent.modals.saveContact} />}
 
