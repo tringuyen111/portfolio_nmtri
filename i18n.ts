@@ -123,7 +123,7 @@ export const initialContent: AppContent = {
         '<b>I connect business needs with technology</b> by <b>listening</b>, <b>clarifying</b>, and <b>structuring requirements</b>, modeling processes, and turning them into <b>implementable documentation</b>.',
         'My focus is on <b>clarity</b>, <b>consistency</b>, and <b>scalability</b> — from the initial idea to a stable solution — ensuring that both business and technical teams <b>speak the same language</b>.'
       ],
-      imageUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      imageUrl: 'https://i.ibb.co/Vvz4w2W/professional-headshot.jpg',
     },
     projects: {
         sectionTitle: 'Portfolio',
@@ -162,7 +162,7 @@ export const initialContent: AppContent = {
         description: 'RMS 2.0 is a multi-functional platform designed for the MEM department of Suntory PepsiCo Vietnam (SPVB). The system streamlines the intake, processing, and management of service requests related to equipment maintenance at retail outlets. It optimizes spare part inventory through QR code labeling and full synchronization with SAP, ensuring data accuracy and operational efficiency.',
         role: 'Business Analyst',
         client: 'Suntory PepsiCo Vietnam (SPVB) – MEM Department',
-        date: '',
+        date: '2022 - 2023',
         deliverables: [
           'Business Requirements Document (BRD)',
           'User Requirements Document (URD)',
@@ -220,7 +220,7 @@ export const initialContent: AppContent = {
     experiencesData: [
       { id: 1, role: 'Business Analyst', company: 'Delfi Technologies', period: 'Aug 2025 - Present', description: 'Analyzing business needs and developing technology solutions to drive efficiency and innovation.', url: 'https://delfi.com/' },
       { id: 2, role: 'Business Analyst', company: 'L.C.S CO., LTD', period: 'Mar 2024 - Aug 2025', description: 'Led BA activities for RMS, TMS, and E-Contract projects. Responsible for requirement analysis, creating Blueprint/BRD/URD, and designing mockups in Figma.', url: 'https://lcs.com.vn/' },
-      { id: 3, role: 'Bachelor of Management Information Systems', company: 'Ho Chi Minh City University of Technology', period: 'Sep 2018 - May 2022', description: 'Graduated with a GPA of 3.3/4.0, gaining a strong foundation in analyzing and designing information systems to solve business problems.', url: 'https://hcmut.edu.vn/' },
+      { id: 3, role: 'Bachelor of Management Information Systems', company: 'Ho Chi Minh City University of Technology (HUTECH)', period: 'Aug 2020 - Jul 2024', description: 'Graduated with a GPA of 3.3/4.0, gaining a strong foundation in analyzing and designing information systems to solve business problems.', url: 'https://www.hutech.edu.vn/' },
     ],
     skills: {
         sectionTitle: 'My Expertise',
@@ -313,7 +313,7 @@ export const initialContent: AppContent = {
           '<b>Tôi kết nối nhu cầu kinh doanh với công nghệ</b> bằng cách <b>lắng nghe</b>, <b>làm rõ</b>, và <b>cấu trúc các yêu cầu</b>, mô hình hóa quy trình, và biến chúng thành <b>tài liệu có thể triển khai</b>.',
           'Trọng tâm của tôi là <b>sự rõ ràng</b>, <b>tính nhất quán</b>, và <b>khả năng mở rộng</b> — từ ý tưởng ban đầu đến một giải pháp ổn định — đảm bảo rằng cả đội ngũ kinh doanh và kỹ thuật đều <b>nói cùng một ngôn ngữ</b>.'
       ],
-      imageUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      imageUrl: 'https://i.ibb.co/Vvz4w2W/professional-headshot.jpg',
     },
     projects: {
         sectionTitle: 'Portfolio',
@@ -352,7 +352,7 @@ export const initialContent: AppContent = {
         description: 'RMS 2.0 là một nền tảng đa chức năng được thiết kế cho bộ phận MEM của Suntory PepsiCo Việt Nam (SPVB). Hệ thống hợp lý hóa việc tiếp nhận, xử lý và quản lý các yêu cầu dịch vụ liên quan đến bảo trì thiết bị tại các cửa hàng bán lẻ. Nó tối ưu hóa hàng tồn kho phụ tùng thông qua việc dán nhãn mã QR và đồng bộ hóa hoàn toàn với SAP, đảm bảo độ chính xác của dữ liệu và hiệu quả hoạt động.',
         role: 'Business Analyst',
         client: 'Suntory PepsiCo Vietnam (SPVB) – Bộ phận MEM',
-        date: '',
+        date: '2022 - 2023',
         deliverables: [
           'Tài liệu Yêu cầu Nghiệp vụ (BRD)',
           'Tài liệu Yêu cầu Người dùng (URD)',
@@ -410,7 +410,7 @@ export const initialContent: AppContent = {
     experiencesData: [
       { id: 1, role: 'Chuyên viên Phân tích nghiệp vụ', company: 'Delfi Technologies', period: 'Tháng 8 2025 - Hiện tại', description: 'Phân tích nhu cầu kinh doanh và phát triển các giải pháp công nghệ để thúc đẩy hiệu quả và đổi mới.', url: 'https://delfi.com/' },
       { id: 2, role: 'Chuyên viên Phân tích nghiệp vụ', company: 'L.C.S CO., LTD', period: 'Tháng 3 2024 - Tháng 8 2025', description: 'Dẫn dắt các hoạt động BA cho các dự án RMS, TMS và E-Contract. Chịu trách nhiệm phân tích yêu cầu, tạo Blueprint/BRD/URD và thiết kế mockup trên Figma.', url: 'https://lcs.com.vn/' },
-      { id: 3, role: 'Cử nhân Hệ thống thông tin quản lý', company: 'Đại học Bách Khoa TP.HCM', period: 'Tháng 9 2018 - Tháng 5 2022', description: 'Tốt nghiệp với GPA 3.3/4.0, có nền tảng vững chắc về phân tích và thiết kế hệ thống thông tin để giải quyết các vấn đề kinh doanh.', url: 'https://hcmut.edu.vn/' },
+      { id: 3, role: 'Cử nhân Hệ thống thông tin quản lý', company: 'Đại học Công nghệ TP.HCM (HUTECH)', period: 'Tháng 8 2020 - Tháng 7 2024', description: 'Tốt nghiệp với GPA 3.3/4.0, có nền tảng vững chắc về phân tích và thiết kế hệ thống thông tin để giải quyết các vấn đề kinh doanh.', url: 'https://www.hutech.edu.vn/' },
     ],
     skills: {
         sectionTitle: 'Chuyên môn',
